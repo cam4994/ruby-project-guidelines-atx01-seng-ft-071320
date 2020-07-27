@@ -1,0 +1,2 @@
+class MillionaireGame
+end
