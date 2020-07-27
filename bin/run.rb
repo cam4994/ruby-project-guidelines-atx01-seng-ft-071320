@@ -2,4 +2,5 @@ require_relative '../config/environment'
 
 
 
-puts "HELLO WORLD"
+neww = MillionaireGame.new
+neww.introduction
