@@ -35,6 +35,7 @@ class User < ActiveRecord::Base
         new_user = self.new_username 
         new_user.password = self.set_password 
         new_user.save 
+        new_user
     end
 
 end

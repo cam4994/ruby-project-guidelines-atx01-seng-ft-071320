@@ -1,5 +1,4 @@
 class MillionaireGame
-    @@question_amounts = [100, 200, 300, 500, 1000, 2000, 4000, 8000, 16000, 32000, 64000, 125000, 2500000, 500000, 1000000]
 
     def self.introduction
         PROMPT.say("Welcome to Millionaire!!!", color: :red)
@@ -34,6 +33,8 @@ class MillionaireGame
 
     def self.start_game
         Question.store_questions
+        @@question_amounts = [100, 200, 300, 500, 1000, 2000, 4000, 8000, 16000, 32000, 64000, 125000, 2500000, 500000, 1000000]
+        @prize_money = 0
         puts "Welcome #{@@player.username}! You will start with a question worth $100."
         puts "As you answer questions correctly, the value of the questions will increase, but so will the difficulty!"
         start = PROMPT.select("Are you ready?", %w(Begin Quit), active_color: :bright_blue)
@@ -46,11 +47,56 @@ class MillionaireGame
     end
 
     def self.main
-        question = Question.get_easy_question
+        self.display
+        question = self.next_question
+        choices = [question.correct_answer, question.incorrect_answer1, question.incorrect_answer2, question.incorrect_answer3].shuffle
+        PROMPT.say("If you answer the next question correctly, your prize money will increase to $#{@question_amount}!!")
+        answer_choice = PROMPT.select("#{question.problem}", choices, per_page: 4, active_color: :bright_blue)
+        if answer_choice == question.correct_answer
+            PROMPT.say("Congratulations! #{answer_choice} is correct!", color: :bright_green)
+            @prize_money = @question_amount
+            #Check to see if that was the final question 
+            if @prize_money == 1000000
+                self.winner
+            else 
+            self.main
+            end
+        else
+            PROMPT.say("Sorry, that's incorrect. The correct answer was #{question.correct_answer}.", color: :bright_red)
+            self.missed_question
+        end
+    end
+
+    def self.next_question
+        @question_amount = @@question_amounts.shift
+        #First five questions easy, second five medium and third five hard
+        if @question_amount < 2000 
+            Question.get_easy_question
+        elsif @question_amount >=2000 && @question_amount <64000
+            Question.get_medium_question
+        else
+            Question.get_hard_question
+        end
     end
 
     def self.display
+        PROMPT.say("User: #{@@player.username}", color: :bright_red)
+        PROMPT.say("Current prize money: $#{@prize_money}", color: :bright_green)
+    end
 
+    def self.missed_question
+        if @prize_money == 0
+            PROMPT.say("You didn't win any money... at least you tried.")
+        else
+            PROMPT.say("That's okay #{@@player.username} you still won $#{@prize_money} of fake money! Be proud!", color: :bright_green)
+        end
+        answer = PROMPT.yes?("Would you like to play a new game?")
+        #if player answered yes, start a new game
+        if answer 
+            self.start_game
+        else
+            self.end_game
+        end
     end
 
     def self.end_game
