@@ -15,8 +15,25 @@ class User < ActiveRecord::Base
                 User.create(username: new_username)
             end
         end
-
-        
-
     end
+
+    def self.set_password 
+        new_password = prompt.mask("Please select a password.") do |p|
+            p.validate(/\A(?=.{5,})(?=.*[A-Z])/x)
+        end
+        confirm_password = prompt.mask("Please re-enter password.")
+        if new_password == confirm_password
+            new_password
+        else
+            puts "The passwords did not match." 
+            self.set_password
+        end
+    end
+
+    def self.new_user 
+        new_user = self.new_username 
+        new_user.password = self.set_password 
+        new_user.save 
+    end
+
 end
