@@ -1,7 +1,8 @@
 class MillionaireGame
 
     def introduction
-        prompt.say("Welcome to Millionaire!!!", color: :red)
+        PROMPT.say("Welcome to Millionaire!!!", color: :red)
+        current_user = User.new_user
     end
 end
 

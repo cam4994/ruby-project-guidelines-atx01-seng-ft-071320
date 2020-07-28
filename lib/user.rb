@@ -3,13 +3,13 @@ class User < ActiveRecord::Base
     has_many :questions, through: :question_users
 
     def self.new_username
-        new_username = prompt.ask("Please select a new username.")
-        confirm_username = prompt.yes?("You selected #{new_username}. Are you sure?")
+        new_username = PROMPT.ask("Please select a new username.")
+        confirm_username = PROMPT.yes?("You selected #{new_username}. Are you sure?")
         if confirm_username == false 
             self.new_username 
         else
             if User.find_by(username: new_username)
-                puts "#{new_username} is already taken. "
+                PROMPT.say("#{new_username} is already taken.", color: :red)
                 self.new_username
             else
                 User.create(username: new_username)
@@ -18,14 +18,14 @@ class User < ActiveRecord::Base
     end
 
     def self.set_password 
-        new_password = prompt.mask("Please select a password.") do |p|
+        new_password = PROMPT.mask("Please select a password.") do |p|
             p.validate(/\A(?=.{5,})(?=.*[A-Z])/x)
         end
-        confirm_password = prompt.mask("Please re-enter password.")
+        confirm_password = PROMPT.mask("Please re-enter password.")
         if new_password == confirm_password
             new_password
         else
-            puts "The passwords did not match." 
+            PROMPT.say("The passwords did not match.", color: :red)
             self.set_password
         end
     end
