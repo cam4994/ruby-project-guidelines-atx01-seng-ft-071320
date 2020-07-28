@@ -1,5 +1,6 @@
 class User < ActiveRecord::Base
     has_many :question_users
+    has_many :lifelines
     has_many :questions, through: :question_users
 
     def self.new_username
@@ -37,5 +38,4 @@ class User < ActiveRecord::Base
         new_user.save 
         new_user
     end
-
 end

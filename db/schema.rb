@@ -10,7 +10,12 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 3) do
+ActiveRecord::Schema.define(version: 4) do
+
+  create_table "lifelines", force: :cascade do |t|
+    t.string "name"
+    t.boolean "available"
+  end
 
   create_table "question_users", force: :cascade do |t|
     t.integer "user_id"

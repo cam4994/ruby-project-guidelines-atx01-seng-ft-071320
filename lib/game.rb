@@ -2,12 +2,19 @@ class MillionaireGame
 
     def self.introduction
         PROMPT.say("Welcome to Millionaire!!!", color: :red)
-        first_time = PROMPT.yes?("Is this your first time playing?")
-        if first_time == true 
-            @@player= User.new_user
-            self.start_game
+        menu_option = PROMPT.select("MAIN MENU", %W(Start Instructions Quit), active_color: :bright_blue)
+        if menu_option == "Start"
+            first_time = PROMPT.yes?("Is this your first time playing?")
+            if first_time == true 
+                @@player= User.new_user
+                self.start_game
+            else
+                self.login
+            end
+        elsif menu_option == "Instructions"
+            self.instructions 
         else
-            self.login
+            self.end_game
         end
     end
 
@@ -50,8 +57,16 @@ class MillionaireGame
         self.display
         question = self.next_question
         choices = [question.correct_answer, question.incorrect_answer1, question.incorrect_answer2, question.incorrect_answer3].shuffle
+        #Check to see which lifelines are available
+        if Lifeline.get_lifeline_fifty.available == true
+            choices << "Fifty-Fifty Lifeline"
+        end
+        if Lifeline.get_lifeline_cut.available == true
+            choices << "Cut Question Lifeline"
+        end
         PROMPT.say("If you answer the next question correctly, your prize money will increase to $#{@question_amount}!!")
-        answer_choice = PROMPT.select("#{question.problem}", choices, per_page: 4, active_color: :bright_blue)
+        answer_choice = PROMPT.select("#{question.problem}", choices, per_page: 4, active_color: :bright_blue, cycle: true)
+        #See if answer was correct, incorrect or a lifeline
         if answer_choice == question.correct_answer
             PROMPT.say("Congratulations! #{answer_choice} is correct!", color: :bright_green)
             @prize_money = @question_amount
@@ -61,6 +76,10 @@ class MillionaireGame
             else 
             self.main
             end
+        elsif answer_choice == "Fifty-Fifty Lifeline"
+            #Activate fifty-fifty WORK ON THIS*************
+        elsif answer_ == "Cut Question Lifeline"
+            #activate cut_question WORK ON THIS************
         else
             PROMPT.say("Sorry, that's incorrect. The correct answer was #{question.correct_answer}.", color: :bright_red)
             self.missed_question
@@ -82,6 +101,15 @@ class MillionaireGame
     def self.display
         PROMPT.say("User: #{@@player.username}", color: :bright_red)
         PROMPT.say("Current prize money: $#{@prize_money}", color: :bright_green)
+        lifelines = []
+        if Lifeline.get_lifeline_fifty.available == true
+            lifelines << Lifeline.get_lifeline_fifty.name
+        end
+        if Lifeline.get_lifeline_cut.available == true
+            lifelines << Lifeline.get_lifeline_cut.name
+        end
+        lifelines = lifelines.join(" and ")
+        PROMPT.say("Available Lifelines: #{lifelines}")
     end
 
     def self.missed_question
@@ -97,6 +125,9 @@ class MillionaireGame
         else
             self.end_game
         end
+    end
+
+    def self.instructions
     end
 
     def self.end_game
