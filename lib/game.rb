@@ -1,10 +1,12 @@
 class MillionaireGame
+    @@question_amounts = [100, 200, 300, 500, 1000, 2000, 4000, 8000, 16000, 32000, 64000, 125000, 2500000, 500000, 1000000]
 
     def self.introduction
         PROMPT.say("Welcome to Millionaire!!!", color: :red)
         first_time = PROMPT.yes?("Is this your first time playing?")
         if first_time == true 
             @@player= User.new_user
+            self.start_game
         else
             self.login
         end
@@ -18,7 +20,7 @@ class MillionaireGame
             player_password = PROMPT.mask("Please enter your password.")
             # If username was found, verify password
             if player_password == @@player.password
-                self.game 
+                self.start_game 
             else
                 PROMPT.say("Incorrect password, please try again.", color: :red)
                 self.login
@@ -30,7 +32,25 @@ class MillionaireGame
         end
     end
 
-    def self.game
+    def self.start_game
+        Question.store_questions
+        puts "Welcome #{@@player.username}! You will start with a question worth $100."
+        puts "As you answer questions correctly, the value of the questions will increase, but so will the difficulty!"
+        start = PROMPT.select("Are you ready?", %w(Begin Quit), active_color: :bright_blue)
+        if start == "Quit"
+            self.end_game
+        else
+            puts "Who wants to be a millionaire in cool ascii"
+            self.main 
+        end
+    end
+
+    def self.main
+        question = Question.get_easy_question
+    end
+
+    def self.display
+
     end
 
     def self.end_game

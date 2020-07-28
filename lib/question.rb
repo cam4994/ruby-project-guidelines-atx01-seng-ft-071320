@@ -20,4 +20,14 @@ class Question < ActiveRecord::Base
             end
         end
     end
+
+    def self.get_easy_question
+        Question.where("difficulty = ?", "easy").sample(1)[0]
+    end
+
+    def self.get_medium_question
+    end
+    def self.get_hard_question
+    end
+
 end

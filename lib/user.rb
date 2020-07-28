@@ -18,8 +18,9 @@ class User < ActiveRecord::Base
     end
 
     def self.set_password 
-        new_password = PROMPT.mask("Please select a password.") do |p|
-            p.validate(/\A(?=.{5,})(?=.*[A-Z])/x)
+        new_password = PROMPT.mask("Please select a password.") do |q|
+            q.validate(/\A(?=.{5,})(?=.*[A-Z])/x)
+            q.messages[:valid?] = "Password must be at least 5 characters and contain an uppercase letter."
         end
         confirm_password = PROMPT.mask("Please re-enter password.")
         if new_password == confirm_password
