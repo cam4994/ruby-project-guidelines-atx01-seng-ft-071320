@@ -72,7 +72,9 @@ class MillionaireGame
         if answer_choice == "Fifty-Fifty Lifeline"
             answer_choice = Lifeline.activate_fifty_fifty(question)
         elsif answer_choice == "Cut Question Lifeline"
-            #activate cut_question WORK ON THIS************
+            question = Lifeline.activate_cut_question(@question_amount)
+            choices = [question.correct_answer, question.incorrect_answer1, question.incorrect_answer2, question.incorrect_answer3].shuffle
+            answer_choice = PROMPT.select("#{question.problem}", choices, per_page: 4, active_color: :bright_blue, cycle: true)
         end
         self.check_if_correct(answer_choice, question)
     end
@@ -136,6 +138,7 @@ class MillionaireGame
     end
 
     def self.instructions
+        #Only one lifeline may be used per question
     end
 
     def self.end_game

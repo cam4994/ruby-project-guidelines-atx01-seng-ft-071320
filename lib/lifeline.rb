@@ -25,7 +25,16 @@ class Lifeline < ActiveRecord::Base
         answer_choice = PROMPT.select("#{question.problem}", choices, per_page: 4, active_color: :bright_blue, cycle: true)
     end
 
-    def self.activate_cut_question
-    
+    def self.activate_cut_question(question_amount)
+        #Change Cut Question lifeline availability to false
+        self.get_lifeline_cut.update(available: false)
+        #Get new question
+        if question_amount < 2000 
+            Question.get_easy_question
+        elsif question_amount >=2000 && question_amount <64000
+            Question.get_medium_question
+        else
+            Question.get_hard_question
+        end
     end
 end
