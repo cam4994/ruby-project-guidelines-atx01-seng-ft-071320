@@ -40,6 +40,9 @@ class MillionaireGame
 
     def self.start_game
         Question.store_questions
+        #Reset lifelines
+        Lifeline.get_lifeline_fifty.update(available: true)
+        Lifeline.get_lifeline_cut.update(available:true)
         @@question_amounts = [100, 200, 300, 500, 1000, 2000, 4000, 8000, 16000, 32000, 64000, 125000, 2500000, 500000, 1000000]
         @prize_money = 0
         puts "Welcome #{@@player.username}! You will start with a question worth $100."
@@ -66,6 +69,15 @@ class MillionaireGame
         end
         PROMPT.say("If you answer the next question correctly, your prize money will increase to $#{@question_amount}!!")
         answer_choice = PROMPT.select("#{question.problem}", choices, per_page: 4, active_color: :bright_blue, cycle: true)
+        if answer_choice == "Fifty-Fifty Lifeline"
+            answer_choice = Lifeline.activate_fifty_fifty(question)
+        elsif answer_choice == "Cut Question Lifeline"
+            #activate cut_question WORK ON THIS************
+        end
+        self.check_if_correct(answer_choice, question)
+    end
+
+    def self.check_if_correct(answer_choice, question)
         #See if answer was correct, incorrect or a lifeline
         if answer_choice == question.correct_answer
             PROMPT.say("Congratulations! #{answer_choice} is correct!", color: :bright_green)
@@ -76,10 +88,6 @@ class MillionaireGame
             else 
             self.main
             end
-        elsif answer_choice == "Fifty-Fifty Lifeline"
-            #Activate fifty-fifty WORK ON THIS*************
-        elsif answer_choice == "Cut Question Lifeline"
-            #activate cut_question WORK ON THIS************
         else
             PROMPT.say("Sorry, that's incorrect. The correct answer was #{question.correct_answer}.", color: :bright_red)
             self.missed_question
