@@ -130,7 +130,6 @@ class MillionaireGame
         puts ""
         sleep(1)
     end
-
     def self.missed_question
         if @prize_money == 0
             PROMPT.say("You didn't win any money... at least you tried.")

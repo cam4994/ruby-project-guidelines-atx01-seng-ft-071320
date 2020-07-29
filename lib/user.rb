@@ -40,6 +40,10 @@ class User < ActiveRecord::Base
     end
 
     def self.high_scores 
-        
+        PROMPT.say("HIGH SCORES", color: :bright_green)
+        users = self.where("high_score > 0").order("high_score DESC").limit(10)
+        users.each do |user|
+            puts "User: #{user.username} ----- High Score: $#{user.high_score}"
+        end
     end
 end
