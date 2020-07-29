@@ -4,6 +4,8 @@ require 'open-uri'
 require 'json'
 require 'bundler'
 require 'tty-prompt'
+require 'colorize'
+require 'colorized_string'
 
 Bundler.require
 

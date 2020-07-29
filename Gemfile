@@ -7,4 +7,4 @@ gem "pry"
 gem "require_all"
 gem "rake"
 gem 'tty-prompt'
-
+gem 'colorize', '~> 0.8.1'

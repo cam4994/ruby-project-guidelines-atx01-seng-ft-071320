@@ -1,8 +1,8 @@
 class MillionaireGame
 
     def self.introduction
-        PROMPT.say("Welcome to Millionaire!!!", color: :red)
-        menu_option = PROMPT.select("MAIN MENU", %W(Start Instructions Quit), active_color: :bright_blue)
+        puts "".light_cyan.bold.blink
+        menu_option = PROMPT.select("MAIN MENU", %W(Start High_Scores Instructions Quit), active_color: :bright_blue)
         if menu_option == "Start"
             first_time = PROMPT.yes?("Is this your first time playing?")
             if first_time == true 
@@ -11,6 +11,9 @@ class MillionaireGame
             else
                 self.login
             end
+        elsif menu_option == "High_Scores"
+            User.high_scores
+            self.introduction
         elsif menu_option == "Instructions"
             self.instructions 
         else
