@@ -59,6 +59,7 @@ class MillionaireGame
     def self.main
         self.display
         question = self.next_question
+        @questionuser = QuestionUser.create(user: @@player, question: question)
         choices = [question.correct_answer, question.incorrect_answer1, question.incorrect_answer2, question.incorrect_answer3].shuffle
         #Check to see which lifelines are available
         if Lifeline.get_lifeline_fifty.available == true
@@ -68,11 +69,14 @@ class MillionaireGame
             choices << "Cut Question Lifeline"
         end
         PROMPT.say("If you answer the next question correctly, your prize money will increase to $#{@question_amount}!!")
+        puts ""
+        sleep(1)
         answer_choice = PROMPT.select("#{question.problem}", choices, per_page: 4, active_color: :bright_blue, cycle: true)
         if answer_choice == "Fifty-Fifty Lifeline"
             answer_choice = Lifeline.activate_fifty_fifty(question)
         elsif answer_choice == "Cut Question Lifeline"
             question = Lifeline.activate_cut_question(@question_amount)
+            @questionuser = QuestionUser.create(user: @@player, question: question)
             choices = [question.correct_answer, question.incorrect_answer1, question.incorrect_answer2, question.incorrect_answer3].shuffle
             answer_choice = PROMPT.select("#{question.problem}", choices, per_page: 4, active_color: :bright_blue, cycle: true)
         end
@@ -82,6 +86,8 @@ class MillionaireGame
     def self.check_if_correct(answer_choice, question)
         #See if answer was correct, incorrect or a lifeline
         if answer_choice == question.correct_answer
+            @questionuser.answered_correctly = true
+            @questionuser.save
             PROMPT.say("Congratulations! #{answer_choice} is correct!", color: :bright_green)
             2.times do 
                 puts ""
@@ -94,6 +100,8 @@ class MillionaireGame
             self.main
             end
         else
+            @questionuser.answered_correctly = false
+            @questionuser.save
             PROMPT.say("Sorry, that's incorrect. The correct answer was #{question.correct_answer}.", color: :bright_red)
             self.missed_question
         end

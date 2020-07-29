@@ -20,6 +20,7 @@ ActiveRecord::Schema.define(version: 4) do
   create_table "question_users", force: :cascade do |t|
     t.integer "user_id"
     t.integer "question_id"
+    t.boolean "answered_correctly"
   end
 
   create_table "questions", force: :cascade do |t|
