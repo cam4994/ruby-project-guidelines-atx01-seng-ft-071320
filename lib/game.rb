@@ -78,7 +78,7 @@ class MillionaireGame
             end
         elsif answer_choice == "Fifty-Fifty Lifeline"
             #Activate fifty-fifty WORK ON THIS*************
-        elsif answer_ == "Cut Question Lifeline"
+        elsif answer_choice == "Cut Question Lifeline"
             #activate cut_question WORK ON THIS************
         else
             PROMPT.say("Sorry, that's incorrect. The correct answer was #{question.correct_answer}.", color: :bright_red)
@@ -109,7 +109,7 @@ class MillionaireGame
             lifelines << Lifeline.get_lifeline_cut.name
         end
         lifelines = lifelines.join(" and ")
-        PROMPT.say("Available Lifelines: #{lifelines}")
+        PROMPT.say("Available Lifelines: #{lifelines}", color: :bright_blue)
     end
 
     def self.missed_question
