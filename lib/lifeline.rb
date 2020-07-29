@@ -22,11 +22,15 @@ class Lifeline < ActiveRecord::Base
         choices.shuffle
         PROMPT.say("Two incorrect answers have been removed.", color: :bright_green)
         sleep(1)
+        puts ""
         answer_choice = PROMPT.select("#{question.problem}", choices, per_page: 4, active_color: :bright_blue, cycle: true)
     end
 
     def self.activate_cut_question(question_amount)
         #Change Cut Question lifeline availability to false
+        PROMPT.say("Thanks to your Cut Question Lifeline, here is your new question!", color: :bright_green)
+        sleep(1)
+        puts ""
         self.get_lifeline_cut.update(available: false)
         #Get new question
         if question_amount < 2000 

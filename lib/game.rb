@@ -83,6 +83,9 @@ class MillionaireGame
         #See if answer was correct, incorrect or a lifeline
         if answer_choice == question.correct_answer
             PROMPT.say("Congratulations! #{answer_choice} is correct!", color: :bright_green)
+            2.times do 
+                puts ""
+            end
             @prize_money = @question_amount
             #Check to see if that was the final question 
             if @prize_money == 1000000
@@ -119,7 +122,13 @@ class MillionaireGame
             lifelines << Lifeline.get_lifeline_cut.name
         end
         lifelines = lifelines.join(" and ")
-        PROMPT.say("Available Lifelines: #{lifelines}", color: :bright_blue)
+        if lifelines == ""
+            PROMPT.say("No Lifelines Available", color: :bright_blue)
+        else
+            PROMPT.say("Available Lifelines: #{lifelines}", color: :bright_blue)
+        end
+        puts ""
+        sleep(1)
     end
 
     def self.missed_question
@@ -128,6 +137,7 @@ class MillionaireGame
         else
             PROMPT.say("That's okay #{@@player.username} you still won $#{@prize_money} of fake money! Be proud!", color: :bright_green)
         end
+        self.high_score?
         answer = PROMPT.yes?("Would you like to play a new game?")
         #if player answered yes, start a new game
         if answer 
@@ -137,8 +147,26 @@ class MillionaireGame
         end
     end
 
+    def self.high_score?
+        #See if high score was passed, if so, update high score 
+        if @@player.high_score == nil
+            @@player.update(high_score: @prize_money)
+        elsif @@player.high_score < @prize_money
+            @@player.update(high_score: @prize_money)
+            PROMPT.say("Congrats, this is the furthest you've ever reached! Keep going for the million!", color: :bright_green)
+            sleep(0.5)
+        end
+    end
+
     def self.instructions
         #Only one lifeline may be used per question
+        #Put Instructions here
+        option = PROMPT.select("OPTIONS", %W(Menu Quit), active_color: :bright_blue)
+        if option == "Quit"
+            self.end_game
+        else
+            self.introduction
+        end
     end
 
     def self.end_game

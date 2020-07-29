@@ -3,6 +3,7 @@ class Question < ActiveRecord::Base
     has_many :users, through: :question_users
 
     def self.store_questions
+        @@questions = []
         url = "https://opentdb.com/api.php?amount=50&type=multiple"
         uri = URI.parse(url)
         response = Net::HTTP.get_response(uri)
@@ -22,15 +23,36 @@ class Question < ActiveRecord::Base
     end
 
     def self.get_easy_question
-        Question.where("difficulty = ?", "easy").sample(1)[0]
+        question = Question.where("difficulty = ?", "easy").sample(1)[0]
+        #make sure questions can't be repeated
+        if @@questions.include?(question)
+            self.get_easy_question
+        else
+            @@questions << question
+        end 
+        question
     end
 
     def self.get_medium_question
-        Question.where("difficulty = ?", "medium").sample(1)[0]
+        question = Question.where("difficulty = ?", "medium").sample(1)[0]
+        #make sure questions can't be repeated
+        if @@questions.include?(question)
+            self.get_medium_question
+        else
+            @@questions << question
+        end 
+        question
     end
     
     def self.get_hard_question
-        Question.where("difficulty = ?", "hard").sample(1)[0]
+        question = Question.where("difficulty = ?", "hard").sample(1)[0]
+        #make sure questions can't be repeated
+        if @@questions.include?(question)
+            self.get_hard_question
+        else
+            @@questions << question
+        end 
+        question
     end
 
 end

@@ -38,4 +38,8 @@ class User < ActiveRecord::Base
         new_user.save 
         new_user
     end
+
+    def self.high_scores 
+        
+    end
 end
