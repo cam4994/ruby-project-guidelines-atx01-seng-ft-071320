@@ -46,4 +46,12 @@ class User < ActiveRecord::Base
             puts "User: #{user.username} ----- High Score: $#{user.high_score}"
         end
     end
+
+    def correct_questions
+        self.questions.where("answered_correctly = true")
+    end
+
+    def missed_questions
+        self.questions.where("answered_correctly = false")
+    end
 end
