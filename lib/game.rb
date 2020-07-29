@@ -42,7 +42,7 @@ class MillionaireGame
         Question.store_questions
         #Reset lifelines
         Lifeline.get_lifeline_fifty.update(available: true)
-        Lifeline.get_lifeline_cut.update(available:true)
+        Lifeline.get_lifeline_cut.update(available: true)
         @@question_amounts = [100, 200, 300, 500, 1000, 2000, 4000, 8000, 16000, 32000, 64000, 125000, 2500000, 500000, 1000000]
         @prize_money = 0
         puts "Welcome #{@@player.username}! You will start with a question worth $100."

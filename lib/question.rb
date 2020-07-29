@@ -9,6 +9,8 @@ class Question < ActiveRecord::Base
         response = Net::HTTP.get_response(uri)
         response.body
         api_questions = JSON.parse(response.body)["results"]
+        #Take API results and get rid of errors with ' and "
+        api_questions = self.fix_api_questions(api_questions)
         api_questions.each do |api_question|
             Question.find_or_create_by(problem: api_question["question"]) do |question|
                 question.category = api_question["category"]
@@ -20,6 +22,22 @@ class Question < ActiveRecord::Base
                 question.incorrect_answer3 = api_question["incorrect_answers"][2]
             end
         end
+    end
+
+    def self.fix_api_questions(questions)
+        questions.each do |question|
+            question["question"].gsub!("&#039;", "'")
+            question["question"].gsub!('&quot;', '"')
+            question["correct_answer"].gsub!("&#039;", "'")
+            question["correct_answer"].gsub!('&quot;', '"')
+            question["incorrect_answers"][0].gsub!("&#039;", "'")
+            question["incorrect_answers"][0].gsub!('&quot;', '"')
+            question["incorrect_answers"][1].gsub!("&#039;", "'")
+            question["incorrect_answers"][1].gsub!('&quot;', '"')
+            question["incorrect_answers"][2].gsub!("&#039;", "'")
+            question["incorrect_answers"][2].gsub!('&quot;', '"')
+        end
+        questions
     end
 
     def self.get_easy_question
