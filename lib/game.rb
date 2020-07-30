@@ -170,7 +170,40 @@ class MillionaireGame
 
     def self.instructions
         #Only one lifeline may be used per question
-        #Put Instructions here
+        puts ""
+        puts "Millionaire is a quiz competition in which the goal is to correctly answer a series of 15 consecutive multiple-choice questions.".light_blue
+        sleep(1.5)
+        puts "You must create a username or login if you are a previous player. Your high score will be recorded.".light_blue
+        sleep(1.5)
+        puts "Each question will have 4 answer choices, with only 1 correct answer.".light_blue
+        sleep(1.5)
+        puts "The question difficulty will increase every 5 questions.".light_blue
+        sleep(1.5)
+        puts 'Each question is worth a specified amount of "Prize Money" and is not cumulative.'.light_blue
+        sleep(1.5)
+        puts "If at any time the contestant gives a wrong answer, the game is over.".light_blue
+        puts ""
+        sleep(2)
+        puts "You will have access to two different Lifelines.".light_green
+        sleep(1.5)
+        print "However, you will only be able to use ".light_green
+        puts "1 Lifeline per question".light_red.bold.underline
+        sleep(1.5)
+        puts "Once a question appears with the 4 answer choices, you can access the Lifelines by either scrolling down or hitting the right arrow key.".light_green
+        puts ""
+        sleep(1.5)
+        print "The ".light_green
+        print "Fifty-Fifty Lifeline".light_red
+        puts " can be used to get rid of two incorrect answer choices.".light_green
+        sleep(1.5)
+        puts ""
+        print "The ".light_green
+        print "Cut Question Lifeline".light_red
+        puts " can be used to swap questions and get a new one.".light_green
+        puts ""
+        sleep(1.5)
+        puts ""
+        puts ""
         option = PROMPT.select("OPTIONS", %W(Menu Quit), active_color: :bright_blue)
         if option == "Quit"
             self.end_game
