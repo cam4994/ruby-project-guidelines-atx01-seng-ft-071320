@@ -39,24 +39,22 @@ class User < ActiveRecord::Base
         new_user
     end
 
-    def self.high_scores 
-        3.times do 
+    def self.high_scores
+        CLI::UI::Frame.open("High Scores") do
             puts ""
+            users = self.where("high_score > 0").order("high_score DESC").limit(10)
+            users.each do |user|
+                print "User: ".light_red
+                print "#{user.username}".light_blue.bold 
+                print " ----- ".bold 
+                print "High Score: ".light_red
+                puts "$#{user.high_score}".yellow.bold
+            end
+            3.times do 
+                puts ""
+            end
+            sleep(1)
         end
-        PROMPT.say("          HIGH SCORES", color: :bright_green)
-        puts ""
-        users = self.where("high_score > 0").order("high_score DESC").limit(10)
-        users.each do |user|
-            print "User: ".light_red
-            print "#{user.username}".light_blue.bold 
-            print " ----- ".bold 
-            print "High Score: ".light_red
-            puts "$#{user.high_score}".yellow.bold
-        end
-        3.times do 
-            puts ""
-        end
-        sleep(1)
     end
 
     def correct_questions

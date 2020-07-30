@@ -1,64 +1,47 @@
 class MillionaireGame
 
     def self.introduction
-        puts "".light_cyan.bold.blink
-        CLI::UI::Frame.open('Welcome to who wants to be...a') do
-
-            puts " 
-            /$$      /$$ /$$ /$$ /$$ /$$                               /$$                     /$$ /$$ /$$
-            | $$$    /$$$|__/| $$| $$|__/                              |__/                    | $$| $$| $$
-            | $$$$  /$$$$ /$$| $$| $$ /$$  /$$$$$$  /$$$$$$$   /$$$$$$  /$$  /$$$$$$   /$$$$$$ | $$| $$| $$
-            | $$ $$/$$ $$| $$| $$| $$| $$ /$$__  $$| $$__  $$ |____  $$| $$ /$$__  $$ /$$__  $$| $$| $$| $$
-            | $$  $$$| $$| $$| $$| $$| $$| $$  \ $$| $$  \ $$  /$$$$$$$| $$| $$  \__/| $$$$$$$$|__/|__/|__/
-            | $$\  $ | $$| $$| $$| $$| $$| $$  | $$| $$  | $$ /$$__  $$| $$| $$      | $$_____/            
-            | $$ \/  | $$| $$| $$| $$| $$|  $$$$$$/| $$  | $$|  $$$$$$$| $$| $$      |  $$$$$$$ /$$ /$$ /$$
-            |__/     |__/|__/|__/|__/|__/ \______/ |__/  |__/ \_______/|__/|__/       \_______/|__/|__/|__/
-                                                                                                           
-                                                                                                           
-                                                                                                           ".yellow
-                                                                                               
-            CLI::UI::Frame.open('Select an option:') do 
-                menu_option = PROMPT.select("MAIN MENU", %W(Start High_Scores Instructions Quit), active_color: :bright_blue)
-                if menu_option == "Start"
-                    first_time = PROMPT.yes?("Is this your first time playing?")
-                    if first_time == true 
-                        @@player= User.new_user
-                        self.start_game
-                    else
-                        CLI::UI::Frame.open('Log in') do
-                            self.login
-                        end
-
-                    end
-                elsif menu_option == "High_Scores"
-                    User.high_scores
-                    self.introduction
-                elsif menu_option == "Instructions"
-                    self.instructions 
-                else
-                    self.end_game
-                end
+        puts "".light_cyan.bold.blink                                                          
+        menu_option = PROMPT.select("MAIN MENU", %W(Start High_Scores Instructions Quit), active_color: :bright_blue)
+        if menu_option == "Start"
+            first_time = PROMPT.yes?("Is this your first time playing?")
+            if first_time == true 
+                @@player= User.new_user
+                self.start_game
+            else
+                self.login
             end
+        elsif menu_option == "High_Scores"
+            User.high_scores
+            self.introduction
+        elsif menu_option == "Instructions"
+            self.instructions 
+        else
+            self.end_game
         end
     end
 
     def self.login
-        previous_user = PROMPT.ask("Please enter your username.")
-        #Check if the username has been used before
-        @@player = User.find_by(username: previous_user)
-        if !!@@player 
-            player_password = PROMPT.mask("Please enter your password.")
-            # If username was found, verify password
-            if player_password == @@player.password
-                self.start_game 
+        CLI::UI::Frame.open('Log in') do
+            previous_user = PROMPT.ask("Please enter your username.")
+            #Check if the username has been used before
+            @@player = User.find_by(username: previous_user)
+            if !!@@player 
+                player_password = PROMPT.mask("Please enter your password.")
+                # If username was found, verify password
+                if player_password == @@player.password
+                    CLI::UI::Frame.open("Welcome, #{@@player.username}!") do
+                        self.start_game
+                    end
+                else
+                    PROMPT.say("Incorrect password, please try again.", color: :red)
+                    self.login
+                end
             else
-                PROMPT.say("Incorrect password, please try again.", color: :red)
+                #username was not found
+                PROMPT.say("Sorry, that's not a valid username! Please try again.", color: :red)
                 self.login
             end
-        else
-            #username was not found
-            PROMPT.say("Sorry, that's not a valid username! Please try again.", color: :red)
-            self.login
         end
     end
 
@@ -69,25 +52,23 @@ class MillionaireGame
         Lifeline.get_lifeline_cut.update(available: true)
         @@question_amounts = [100, 200, 300, 500, 1000, 2000, 4000, 8000, 16000, 32000, 64000, 125000, 2500000, 500000, 1000000]
         @prize_money = 0
-            puts "You will start with a question worth $100.
-            As you answer questions correctly, the value of the questions will increase, but so will the difficulty!"
+        puts "Welcome! You will start with a question worth $100. As you answer questions correctly, the value of the questions will increase, but so will the difficulty!"
             start = PROMPT.select("Are you ready?", %w(Begin Quit), active_color: :bright_blue)
         if start == "Quit"
             self.end_game
         else
-            puts " 
-            /$$      /$$ /$$ /$$ /$$ /$$                               /$$                     /$$ /$$ /$$
-            | $$$    /$$$|__/| $$| $$|__/                              |__/                    | $$| $$| $$
-            | $$$$  /$$$$ /$$| $$| $$ /$$  /$$$$$$  /$$$$$$$   /$$$$$$  /$$  /$$$$$$   /$$$$$$ | $$| $$| $$
-            | $$ $$/$$ $$| $$| $$| $$| $$ /$$__  $$| $$__  $$ |____  $$| $$ /$$__  $$ /$$__  $$| $$| $$| $$
-            | $$  $$$| $$| $$| $$| $$| $$| $$  \ $$| $$  \ $$  /$$$$$$$| $$| $$  \__/| $$$$$$$$|__/|__/|__/
-            | $$\  $ | $$| $$| $$| $$| $$| $$  | $$| $$  | $$ /$$__  $$| $$| $$      | $$_____/            
-            | $$ \/  | $$| $$| $$| $$| $$|  $$$$$$/| $$  | $$|  $$$$$$$| $$| $$      |  $$$$$$$ /$$ /$$ /$$
-            |__/     |__/|__/|__/|__/|__/ \______/ |__/  |__/ \_______/|__/|__/       \_______/|__/|__/|__/
-                                                                                                           
-                                                                                                           
-                                                                                                           ".yellow
-            self.main
+            CLI::UI::Frame.open("Alright, let's play Who Wants to be a") do
+                puts "
+                /$$      /$$ /$$ /$$ /$$ /$$                               /$$                     /$$ /$$ /$$
+               | $$$    /$$$|__/| $$| $$|__/                              |__/                    | $$| $$| $$
+               | $$$$  /$$$$ /$$| $$| $$ /$$  /$$$$$$  /$$$$$$$   /$$$$$$  /$$  /$$$$$$   /$$$$$$ | $$| $$| $$
+               | $$ $$/$$ $$| $$| $$| $$| $$ /$$__  $$| $$__  $$ |____  $$| $$ /$$__  $$ /$$__  $$| $$| $$| $$
+               | $$  $$$| $$| $$| $$| $$| $$| $$  \ $$| $$  \ $$  /$$$$$$$| $$| $$  \__/| $$$$$$$$|__/|__/|__/
+               | $$\  $ | $$| $$| $$| $$| $$| $$  | $$| $$  | $$ /$$__  $$| $$| $$      | $$_____/            
+               | $$ \/  | $$| $$| $$| $$| $$|  $$$$$$/| $$  | $$|  $$$$$$$| $$| $$      |  $$$$$$$ /$$ /$$ /$$
+               |__/     |__/|__/|__/|__/|__/ \______/ |__/  |__/ \_______/|__/|__/       \_______/|__/|__/|__/".yellow
+                self.main
+            end
         end
     end
 
@@ -191,7 +172,7 @@ class MillionaireGame
     end
 
     def self.high_score?
-        #See if high score was passed, if so, update high score 
+        #See if high score was passed, if so, update high score
         if @@player.high_score == nil
             @@player.update(high_score: @prize_money)
         elsif @@player.high_score < @prize_money
@@ -202,8 +183,7 @@ class MillionaireGame
     end
 
     def self.instructions
-        CLI::UI::Frame.open('Instructions') do
-            CLI::UI::Frame.open('How to play') {
+            CLI::UI::Frame.open('How to play') do
                 puts ""
                 puts "Millionaire is a quiz competition in which the goal is to correctly answer a series of 15 consecutive multiple-choice questions.".light_blue
                 sleep(1.5)
@@ -218,8 +198,8 @@ class MillionaireGame
                 puts "If at any time the contestant gives a wrong answer, the game is over.".light_blue
                 puts ""
                 sleep(2)
-            }
-            CLI::UI::Frame.open('Lifelines') {
+            end
+            CLI::UI::Frame.open('Lifelines') do
                 puts "You will have access to two different Lifelines.".light_green
                 sleep(1.5)
                 print "However, you will only be able to use ".light_green
@@ -238,15 +218,12 @@ class MillionaireGame
                 puts " can be used to swap questions and get a new one.".light_green
                 puts ""
                 sleep(1.5)
-            }
-        end
-        CLI::UI::Frame.open('Currently viewing: Instructions') do
-            option = PROMPT.select("OPTIONS", %W(Menu Quit), active_color: :bright_blue)
-            if option == "Quit"
-                self.end_game
-            else
-                self.introduction
             end
+        option = PROMPT.select("OPTIONS", %W(Menu Quit), active_color: :bright_blue)
+        if option == "Quit"
+            self.end_game
+        else
+            self.introduction
         end
     end
 
