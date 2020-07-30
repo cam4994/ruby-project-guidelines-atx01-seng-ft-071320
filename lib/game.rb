@@ -184,10 +184,11 @@ class MillionaireGame
         puts "If at any time the contestant gives a wrong answer, the game is over.".light_blue
         puts ""
         sleep(2)
-        puts "You will have access to two different Lifelines.".light_green
+        puts "You will have access to 2 different Lifelines.".light_green
         sleep(1.5)
         print "However, you will only be able to use ".light_green
-        puts "1 Lifeline per question".light_red.bold.underline
+        print "1 Lifeline per question".light_red.bold.underline
+        puts " and each Lifeline can only be used once."
         sleep(1.5)
         puts "Once a question appears with the 4 answer choices, you can access the Lifelines by either scrolling down or hitting the right arrow key.".light_green
         puts ""
