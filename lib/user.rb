@@ -27,7 +27,7 @@ class User < ActiveRecord::Base
         if new_password == confirm_password
             new_password
         else
-            PROMPT.say("The passwords did not match.", color: :red)
+            PROMPT.say("The passwords did not match. Please try again.", color: :red)
             self.set_password
         end
     end

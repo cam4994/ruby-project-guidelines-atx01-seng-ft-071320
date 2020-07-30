@@ -1,7 +1,9 @@
 class MillionaireGame
 
     def self.introduction
-        puts "".light_cyan.bold.blink
+        puts "Welcome to MILLIONAIRE!!!".light_cyan.bold
+        puts ""
+        puts ""
         menu_option = PROMPT.select("MAIN MENU", %W(Start High_Scores Instructions Quit), active_color: :bright_blue)
         if menu_option == "Start"
             first_time = PROMPT.yes?("Is this your first time playing?")
@@ -31,13 +33,25 @@ class MillionaireGame
             if player_password == @@player.password
                 self.start_game 
             else
-                PROMPT.say("Incorrect password, please try again.", color: :red)
+                PROMPT.say("Incorrect password.", color: :red)
+                puts ""
                 self.login
             end
         else
             #username was not found
             PROMPT.say("Sorry, that's not a valid username! Please try again.", color: :red)
+            self.login_or_create
+        end
+    end
+
+    def self.login_or_create
+        option = PROMPT.select(" ", %W(Login Create_Username), active_color: :bright_blue)
+        puts ""
+        if option == "Login"
             self.login
+        else 
+            @@player= User.new_user
+            self.start_game
         end
     end
 
@@ -48,8 +62,11 @@ class MillionaireGame
         Lifeline.get_lifeline_cut.update(available: true)
         @@question_amounts = [100, 200, 300, 500, 1000, 2000, 4000, 8000, 16000, 32000, 64000, 125000, 2500000, 500000, 1000000]
         @prize_money = 0
-        puts "Welcome #{@@player.username}! You will start with a question worth $100."
+        puts ""
+        print "Welcome #{@@player.username}! You will start with a question worth "
+        puts "$100".light_green.bold
         puts "As you answer questions correctly, the value of the questions will increase, but so will the difficulty!"
+        puts ""
         start = PROMPT.select("Are you ready?", %w(Begin Quit), active_color: :bright_blue)
         if start == "Quit"
             self.end_game
