@@ -4,8 +4,17 @@ class MillionaireGame
         puts "".light_cyan.bold.blink                                                          
         menu_option = PROMPT.select("MAIN MENU", %W(Start High_Scores Instructions Quit), active_color: :bright_blue)
         if menu_option == "Start"
-            first_time = PROMPT.yes?("Is this your first time playing?")
-            if first_time == true 
+            # first_time = PROMPT.ask("Is this your first time playing?")
+            # if first_time == true 
+            #     @@player= User.new_user
+            #     self.start_game
+            # else
+            #     self.login
+            # end
+            CLI::UI::StdoutRouter.enable
+            first_time=CLI::UI.ask("Is this your first time playing?", options: %w(Yes No))
+            case first_time
+            when "Yes"
                 @@player= User.new_user
                 self.start_game
             else
@@ -22,17 +31,16 @@ class MillionaireGame
     end
 
     def self.login
+        CLI::UI::StdoutRouter.enable
         CLI::UI::Frame.open('Log in') do
-            previous_user = PROMPT.ask("Please enter your username.")
+            previous_user = CLI::UI.ask("Please enter your username.")
             #Check if the username has been used before
             @@player = User.find_by(username: previous_user)
             if !!@@player 
                 player_password = PROMPT.mask("Please enter your password.")
                 # If username was found, verify password
                 if player_password == @@player.password
-                    CLI::UI::Frame.open("Welcome, #{@@player.username}!") do
                         self.start_game
-                    end
                 else
                     PROMPT.say("Incorrect password, please try again.", color: :red)
                     self.login
@@ -46,57 +54,53 @@ class MillionaireGame
     end
 
     def self.start_game
-        Question.store_questions
-        #Reset lifelines
-        Lifeline.get_lifeline_fifty.update(available: true)
-        Lifeline.get_lifeline_cut.update(available: true)
-        @@question_amounts = [100, 200, 300, 500, 1000, 2000, 4000, 8000, 16000, 32000, 64000, 125000, 2500000, 500000, 1000000]
-        @prize_money = 0
-        puts "Welcome! You will start with a question worth $100. As you answer questions correctly, the value of the questions will increase, but so will the difficulty!"
-            start = PROMPT.select("Are you ready?", %w(Begin Quit), active_color: :bright_blue)
-        if start == "Quit"
-            self.end_game
-        else
-            CLI::UI::Frame.open("Alright, let's play Who Wants to be a") do
-                puts "
-                /$$      /$$ /$$ /$$ /$$ /$$                               /$$                     /$$ /$$ /$$
-               | $$$    /$$$|__/| $$| $$|__/                              |__/                    | $$| $$| $$
-               | $$$$  /$$$$ /$$| $$| $$ /$$  /$$$$$$  /$$$$$$$   /$$$$$$  /$$  /$$$$$$   /$$$$$$ | $$| $$| $$
-               | $$ $$/$$ $$| $$| $$| $$| $$ /$$__  $$| $$__  $$ |____  $$| $$ /$$__  $$ /$$__  $$| $$| $$| $$
-               | $$  $$$| $$| $$| $$| $$| $$| $$  \ $$| $$  \ $$  /$$$$$$$| $$| $$  \__/| $$$$$$$$|__/|__/|__/
-               | $$\  $ | $$| $$| $$| $$| $$| $$  | $$| $$  | $$ /$$__  $$| $$| $$      | $$_____/            
-               | $$ \/  | $$| $$| $$| $$| $$|  $$$$$$/| $$  | $$|  $$$$$$$| $$| $$      |  $$$$$$$ /$$ /$$ /$$
-               |__/     |__/|__/|__/|__/|__/ \______/ |__/  |__/ \_______/|__/|__/       \_______/|__/|__/|__/".yellow
+        CLI::UI::StdoutRouter.enable
+        CLI::UI::Frame.open("Welcome, #{@@player.username}") do
+            Question.store_questions
+            #Reset lifelines
+            Lifeline.get_lifeline_fifty.update(available: true)
+            Lifeline.get_lifeline_cut.update(available: true)
+            @@question_amounts = [100, 200, 300, 500, 1000, 2000, 4000, 8000, 16000, 32000, 64000, 125000, 2500000, 500000, 1000000]
+            @prize_money = 0
+            puts "You will start with a question worth $100. As you answer questions correctly, the value of the questions will increase, but so will the difficulty!"
+                start = PROMPT.select("Are you ready?", %w(Begin Quit), active_color: :bright_blue)
+            if start == "Quit"
+                self.end_game
+            else
                 self.main
-            end
+            end 
         end
     end
 
     def self.main
-        self.display
-        question = self.next_question
-        @questionuser = QuestionUser.create(user: @@player, question: question)
-        choices = [question.correct_answer, question.incorrect_answer1, question.incorrect_answer2, question.incorrect_answer3].shuffle
-        #Check to see which lifelines are available
-        if Lifeline.get_lifeline_fifty.available == true
-            choices << "Fifty-Fifty Lifeline"
-        end
-        if Lifeline.get_lifeline_cut.available == true
-            choices << "Cut Question Lifeline"
-        end
-        PROMPT.say("If you answer the next question correctly, your prize money will increase to $#{@question_amount}!!")
-        puts ""
-        sleep(1)
-        answer_choice = PROMPT.select("#{question.problem}", choices, per_page: 4, active_color: :bright_blue, cycle: true)
-        if answer_choice == "Fifty-Fifty Lifeline"
-            answer_choice = Lifeline.activate_fifty_fifty(question)
-        elsif answer_choice == "Cut Question Lifeline"
-            question = Lifeline.activate_cut_question(@question_amount)
+        CLI::UI::StdoutRouter.enable
+        CLI::UI::Frame.open("Alright, let's play") do
+            self.millionaire_banner
+            self.display
+            question = self.next_question
             @questionuser = QuestionUser.create(user: @@player, question: question)
             choices = [question.correct_answer, question.incorrect_answer1, question.incorrect_answer2, question.incorrect_answer3].shuffle
+            #Check to see which lifelines are available
+            if Lifeline.get_lifeline_fifty.available == true
+                choices << "Fifty-Fifty Lifeline"
+            end
+            if Lifeline.get_lifeline_cut.available == true
+                choices << "Cut Question Lifeline"
+            end
+            PROMPT.say("If you answer the next question correctly, you'll win' $#{@question_amount}!!")
+            puts ""
+            sleep(1)
             answer_choice = PROMPT.select("#{question.problem}", choices, per_page: 4, active_color: :bright_blue, cycle: true)
+            if answer_choice == "Fifty-Fifty Lifeline"
+                answer_choice = Lifeline.activate_fifty_fifty(question)
+            elsif answer_choice == "Cut Question Lifeline"
+                question = Lifeline.activate_cut_question(@question_amount)
+                @questionuser = QuestionUser.create(user: @@player, question: question)
+                choices = [question.correct_answer, question.incorrect_answer1, question.incorrect_answer2, question.incorrect_answer3].shuffle
+                answer_choice = PROMPT.select("#{question.problem}", choices, per_page: 4, active_color: :bright_blue, cycle: true)
+            end
+            self.check_if_correct(answer_choice, question)
         end
-        self.check_if_correct(answer_choice, question)
     end
 
     def self.check_if_correct(answer_choice, question)
@@ -136,23 +140,26 @@ class MillionaireGame
     end
 
     def self.display
-        PROMPT.say("User: #{@@player.username}", color: :bright_red)
-        PROMPT.say("Current prize money: $#{@prize_money}", color: :bright_green)
-        lifelines = []
-        if Lifeline.get_lifeline_fifty.available == true
-            lifelines << Lifeline.get_lifeline_fifty.name
+        CLI::UI::StdoutRouter.enable
+        CLI::UI::Frame.open("Player Info") do
+            PROMPT.say("User: #{@@player.username}", color: :bright_red)
+            PROMPT.say("Current prize money: $#{@prize_money}", color: :bright_green)
+            lifelines = []
+            if Lifeline.get_lifeline_fifty.available == true
+                lifelines << Lifeline.get_lifeline_fifty.name
+            end
+            if Lifeline.get_lifeline_cut.available == true
+                lifelines << Lifeline.get_lifeline_cut.name
+            end
+            lifelines = lifelines.join(" and ")
+            if lifelines == ""
+                PROMPT.say("No Lifelines Available", color: :bright_blue)
+            else
+                PROMPT.say("Available Lifelines: #{lifelines}", color: :bright_blue)
+            end
+            puts ""
+            sleep(1)
         end
-        if Lifeline.get_lifeline_cut.available == true
-            lifelines << Lifeline.get_lifeline_cut.name
-        end
-        lifelines = lifelines.join(" and ")
-        if lifelines == ""
-            PROMPT.say("No Lifelines Available", color: :bright_blue)
-        else
-            PROMPT.say("Available Lifelines: #{lifelines}", color: :bright_blue)
-        end
-        puts ""
-        sleep(1)
     end
 
     def self.missed_question
@@ -162,9 +169,17 @@ class MillionaireGame
             PROMPT.say("That's okay #{@@player.username} you still won $#{@prize_money} of fake money! Be proud!", color: :bright_green)
         end
         self.high_score?
-        answer = PROMPT.yes?("Would you like to play a new game?")
-        #if player answered yes, start a new game
-        if answer 
+        # answer = PROMPT.yes?("Would you like to play a new game?")
+        # #if player answered yes, start a new game
+        # if answer
+        #     self.start_game
+        # else
+        #     self.end_game
+        # end
+        CLI::UI::StdoutRouter.enable
+        answer = CLI::UI.ask("Would you like to play again?", options: %w(Yes No))
+        case answer
+        when "Yes"
             self.start_game
         else
             self.end_game
@@ -183,41 +198,32 @@ class MillionaireGame
     end
 
     def self.instructions
+        CLI::UI::StdoutRouter.enable
             CLI::UI::Frame.open('How to play') do
                 puts ""
                 puts "Millionaire is a quiz competition in which the goal is to correctly answer a series of 15 consecutive multiple-choice questions.".light_blue
-                sleep(1.5)
                 puts "You must create a username or login if you are a previous player. Your high score will be recorded.".light_blue
-                sleep(1.5)
                 puts "Each question will have 4 answer choices, with only 1 correct answer.".light_blue
-                sleep(1.5)
                 puts "The question difficulty will increase every 5 questions.".light_blue
-                sleep(1.5)
                 puts 'Each question is worth a specified amount of "Prize Money" and is not cumulative.'.light_blue
-                sleep(1.5)
                 puts "If at any time the contestant gives a wrong answer, the game is over.".light_blue
                 puts ""
-                sleep(2)
             end
+            CLI::UI::StdoutRouter.enable
             CLI::UI::Frame.open('Lifelines') do
                 puts "You will have access to two different Lifelines.".light_green
-                sleep(1.5)
                 print "However, you will only be able to use ".light_green
                 puts "1 Lifeline per question".light_red.bold.underline
-                sleep(1.5)
                 puts "Once a question appears with the 4 answer choices, you can access the Lifelines by either scrolling down or hitting the right arrow key.".light_green
                 puts ""
-                sleep(1.5)
                 print "The ".light_green
                 print "Fifty-Fifty Lifeline".light_red
                 puts " can be used to get rid of two incorrect answer choices.".light_green
-                sleep(1.5)
                 puts ""
                 print "The ".light_green
                 print "Cut Question Lifeline".light_red
                 puts " can be used to swap questions and get a new one.".light_green
                 puts ""
-                sleep(1.5)
             end
         option = PROMPT.select("OPTIONS", %W(Menu Quit), active_color: :bright_blue)
         if option == "Quit"
@@ -229,6 +235,18 @@ class MillionaireGame
 
     def self.end_game
         puts "Play again soon!"
+    end
+
+    def self.millionaire_banner
+        puts "
+        /$$      /$$ /$$ /$$ /$$ /$$                               /$$                     /$$ /$$ /$$
+       | $$$    /$$$|__/| $$| $$|__/                              |__/                    | $$| $$| $$
+       | $$$$  /$$$$ /$$| $$| $$ /$$  /$$$$$$  /$$$$$$$   /$$$$$$  /$$  /$$$$$$   /$$$$$$ | $$| $$| $$
+       | $$ $$/$$ $$| $$| $$| $$| $$ /$$__  $$| $$__  $$ |____  $$| $$ /$$__  $$ /$$__  $$| $$| $$| $$
+       | $$  $$$| $$| $$| $$| $$| $$| $$  \  $$| $$  \  $$  /$$$$$$$| $$| $$  \ __/| $$$$$$$$|__/|__/|__/
+       | $$\   $ | $$| $$| $$| $$| $$| $$  | $$| $$  | $$ /$$__  $$| $$| $$      | $$_____/            
+       | $$ \ /  | $$| $$| $$| $$| $$|  $$$$$$/| $$  | $$|  $$$$$$$| $$| $$      |  $$$$$$$ /$$ /$$ /$$
+       |__/     |__/|__/|__/|__/|__/ \ ______/ |__/  |__/ \ _______/|__/|__/       \ _______/|__/|__/|__/".yellow
     end
 end
 
