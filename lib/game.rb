@@ -174,11 +174,11 @@ class MillionaireGame
         self.high_score?
         answer = PROMPT.yes?("Would you like to play a new game?")
         #if player answered yes, start a new game
+        puts "\n" * 50
         if answer 
-            puts "\n" * 50
             self.start_game
         else
-            self.end_game
+            self.introduction
         end
     end
 
