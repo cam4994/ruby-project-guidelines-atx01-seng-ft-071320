@@ -2,22 +2,43 @@ class MillionaireGame
 
     def self.introduction
         puts "".light_cyan.bold.blink
-        menu_option = PROMPT.select("MAIN MENU", %W(Start High_Scores Instructions Quit), active_color: :bright_blue)
-        if menu_option == "Start"
-            first_time = PROMPT.yes?("Is this your first time playing?")
-            if first_time == true 
-                @@player= User.new_user
-                self.start_game
-            else
-                self.login
+        CLI::UI::Frame.open('Welcome to who wants to be...a') do
+
+            puts " 
+            /$$      /$$ /$$ /$$ /$$ /$$                               /$$                     /$$ /$$ /$$
+            | $$$    /$$$|__/| $$| $$|__/                              |__/                    | $$| $$| $$
+            | $$$$  /$$$$ /$$| $$| $$ /$$  /$$$$$$  /$$$$$$$   /$$$$$$  /$$  /$$$$$$   /$$$$$$ | $$| $$| $$
+            | $$ $$/$$ $$| $$| $$| $$| $$ /$$__  $$| $$__  $$ |____  $$| $$ /$$__  $$ /$$__  $$| $$| $$| $$
+            | $$  $$$| $$| $$| $$| $$| $$| $$  \ $$| $$  \ $$  /$$$$$$$| $$| $$  \__/| $$$$$$$$|__/|__/|__/
+            | $$\  $ | $$| $$| $$| $$| $$| $$  | $$| $$  | $$ /$$__  $$| $$| $$      | $$_____/            
+            | $$ \/  | $$| $$| $$| $$| $$|  $$$$$$/| $$  | $$|  $$$$$$$| $$| $$      |  $$$$$$$ /$$ /$$ /$$
+            |__/     |__/|__/|__/|__/|__/ \______/ |__/  |__/ \_______/|__/|__/       \_______/|__/|__/|__/
+                                                                                                           
+                                                                                                           
+                                                                                                           ".yellow
+                                                                                               
+            CLI::UI::Frame.open('Select an option:') do 
+                menu_option = PROMPT.select("MAIN MENU", %W(Start High_Scores Instructions Quit), active_color: :bright_blue)
+                if menu_option == "Start"
+                    first_time = PROMPT.yes?("Is this your first time playing?")
+                    if first_time == true 
+                        @@player= User.new_user
+                        self.start_game
+                    else
+                        CLI::UI::Frame.open('Log in') do
+                            self.login
+                        end
+
+                    end
+                elsif menu_option == "High_Scores"
+                    User.high_scores
+                    self.introduction
+                elsif menu_option == "Instructions"
+                    self.instructions 
+                else
+                    self.end_game
+                end
             end
-        elsif menu_option == "High_Scores"
-            User.high_scores
-            self.introduction
-        elsif menu_option == "Instructions"
-            self.instructions 
-        else
-            self.end_game
         end
     end
 
@@ -48,14 +69,25 @@ class MillionaireGame
         Lifeline.get_lifeline_cut.update(available: true)
         @@question_amounts = [100, 200, 300, 500, 1000, 2000, 4000, 8000, 16000, 32000, 64000, 125000, 2500000, 500000, 1000000]
         @prize_money = 0
-        puts "Welcome #{@@player.username}! You will start with a question worth $100."
-        puts "As you answer questions correctly, the value of the questions will increase, but so will the difficulty!"
-        start = PROMPT.select("Are you ready?", %w(Begin Quit), active_color: :bright_blue)
+            puts "You will start with a question worth $100.
+            As you answer questions correctly, the value of the questions will increase, but so will the difficulty!"
+            start = PROMPT.select("Are you ready?", %w(Begin Quit), active_color: :bright_blue)
         if start == "Quit"
             self.end_game
         else
-            puts "Who wants to be a millionaire in cool ascii"
-            self.main 
+            puts " 
+            /$$      /$$ /$$ /$$ /$$ /$$                               /$$                     /$$ /$$ /$$
+            | $$$    /$$$|__/| $$| $$|__/                              |__/                    | $$| $$| $$
+            | $$$$  /$$$$ /$$| $$| $$ /$$  /$$$$$$  /$$$$$$$   /$$$$$$  /$$  /$$$$$$   /$$$$$$ | $$| $$| $$
+            | $$ $$/$$ $$| $$| $$| $$| $$ /$$__  $$| $$__  $$ |____  $$| $$ /$$__  $$ /$$__  $$| $$| $$| $$
+            | $$  $$$| $$| $$| $$| $$| $$| $$  \ $$| $$  \ $$  /$$$$$$$| $$| $$  \__/| $$$$$$$$|__/|__/|__/
+            | $$\  $ | $$| $$| $$| $$| $$| $$  | $$| $$  | $$ /$$__  $$| $$| $$      | $$_____/            
+            | $$ \/  | $$| $$| $$| $$| $$|  $$$$$$/| $$  | $$|  $$$$$$$| $$| $$      |  $$$$$$$ /$$ /$$ /$$
+            |__/     |__/|__/|__/|__/|__/ \______/ |__/  |__/ \_______/|__/|__/       \_______/|__/|__/|__/
+                                                                                                           
+                                                                                                           
+                                                                                                           ".yellow
+            self.main
         end
     end
 
@@ -141,6 +173,7 @@ class MillionaireGame
         puts ""
         sleep(1)
     end
+
     def self.missed_question
         if @prize_money == 0
             PROMPT.say("You didn't win any money... at least you tried.")
@@ -169,42 +202,43 @@ class MillionaireGame
     end
 
     def self.instructions
-        #Only one lifeline may be used per question
         CLI::UI::Frame.open('Instructions') do
-            puts ""
-            puts "Millionaire is a quiz competition in which the goal is to correctly answer a series of 15 consecutive multiple-choice questions.".light_blue
-            sleep(1.5)
-            puts "You must create a username or login if you are a previous player. Your high score will be recorded.".light_blue
-            sleep(1.5)
-            puts "Each question will have 4 answer choices, with only 1 correct answer.".light_blue
-            sleep(1.5)
-            puts "The question difficulty will increase every 5 questions.".light_blue
-            sleep(1.5)
-            puts 'Each question is worth a specified amount of "Prize Money" and is not cumulative.'.light_blue
-            sleep(1.5)
-            puts "If at any time the contestant gives a wrong answer, the game is over.".light_blue
-            puts ""
-            sleep(2)
-            puts "You will have access to two different Lifelines.".light_green
-            sleep(1.5)
-            print "However, you will only be able to use ".light_green
-            puts "1 Lifeline per question".light_red.bold.underline
-            sleep(1.5)
-            puts "Once a question appears with the 4 answer choices, you can access the Lifelines by either scrolling down or hitting the right arrow key.".light_green
-            puts ""
-            sleep(1.5)
-            print "The ".light_green
-            print "Fifty-Fifty Lifeline".light_red
-            puts " can be used to get rid of two incorrect answer choices.".light_green
-            sleep(1.5)
-            puts ""
-            print "The ".light_green
-            print "Cut Question Lifeline".light_red
-            puts " can be used to swap questions and get a new one.".light_green
-            puts ""
-            sleep(1.5)
-            puts ""
-            puts ""
+            CLI::UI::Frame.open('How to play') {
+                puts ""
+                puts "Millionaire is a quiz competition in which the goal is to correctly answer a series of 15 consecutive multiple-choice questions.".light_blue
+                sleep(1.5)
+                puts "You must create a username or login if you are a previous player. Your high score will be recorded.".light_blue
+                sleep(1.5)
+                puts "Each question will have 4 answer choices, with only 1 correct answer.".light_blue
+                sleep(1.5)
+                puts "The question difficulty will increase every 5 questions.".light_blue
+                sleep(1.5)
+                puts 'Each question is worth a specified amount of "Prize Money" and is not cumulative.'.light_blue
+                sleep(1.5)
+                puts "If at any time the contestant gives a wrong answer, the game is over.".light_blue
+                puts ""
+                sleep(2)
+            }
+            CLI::UI::Frame.open('Lifelines') {
+                puts "You will have access to two different Lifelines.".light_green
+                sleep(1.5)
+                print "However, you will only be able to use ".light_green
+                puts "1 Lifeline per question".light_red.bold.underline
+                sleep(1.5)
+                puts "Once a question appears with the 4 answer choices, you can access the Lifelines by either scrolling down or hitting the right arrow key.".light_green
+                puts ""
+                sleep(1.5)
+                print "The ".light_green
+                print "Fifty-Fifty Lifeline".light_red
+                puts " can be used to get rid of two incorrect answer choices.".light_green
+                sleep(1.5)
+                puts ""
+                print "The ".light_green
+                print "Cut Question Lifeline".light_red
+                puts " can be used to swap questions and get a new one.".light_green
+                puts ""
+                sleep(1.5)
+            }
         end
         CLI::UI::Frame.open('Currently viewing: Instructions') do
             option = PROMPT.select("OPTIONS", %W(Menu Quit), active_color: :bright_blue)
