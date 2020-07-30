@@ -6,6 +6,8 @@ require 'bundler'
 require 'tty-prompt'
 require 'colorize'
 require 'colorized_string'
+require 'cli/ui'
+
 
 Bundler.require
 
