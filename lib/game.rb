@@ -41,7 +41,7 @@ class MillionaireGame
             end
         else
             #username was not found
-            PROMPT.say("Sorry, that's not a valid username! Please try again.", color: :red)
+            PROMPT.say("Sorry, that's not a valid username!", color: :red)
             self.login_or_create
         end
     end
@@ -63,6 +63,7 @@ class MillionaireGame
         Lifeline.get_lifeline_fifty.update(available: true)
         Lifeline.get_lifeline_cut.update(available: true)
         @@question_amounts = [100, 200, 300, 500, 1000, 2000, 4000, 8000, 16000, 32000, 64000, 125000, 2500000, 500000, 1000000]
+        @question_counter = 0 
         @prize_money = 0
         print "Welcome "
         print "#{@@player.username}".red.bold
@@ -121,7 +122,7 @@ class MillionaireGame
             if @prize_money == 1000000
                 self.winner
             else 
-            self.main
+                self.main
             end
         else
             @questionuser.answered_correctly = false
@@ -145,6 +146,21 @@ class MillionaireGame
     end
 
     def self.display
+        @question_counter +=1
+        q = 15
+        @@question_amounts.each_with_index do |amount, i|
+            i += 1 
+            print "#{q}  ".yellow.bold 
+            print "$#{@@question_amounts[-i]}".green
+            if q == @question_counter 
+                puts "  <----"
+            else
+                puts "\n"
+            end
+            q -=1
+        end
+        sleep(2.5)
+        puts "\n" * 2
         PROMPT.say("User: #{@@player.username}", color: :bright_red)
         PROMPT.say("Current prize money: $#{@prize_money}", color: :bright_green)
         lifelines = []
@@ -163,6 +179,7 @@ class MillionaireGame
         puts ""
         sleep(1)
     end
+
     def self.missed_question
         puts "\n" * 50
         if @prize_money == 0
@@ -188,7 +205,7 @@ class MillionaireGame
             @@player.update(high_score: @prize_money)
         elsif @@player.high_score < @prize_money
             @@player.update(high_score: @prize_money)
-            PROMPT.say("Congrats, this is the furthest you've ever reached! Keep going for the million!", color: :bright_green)
+            PROMPT.say("Congrats, this is the furthest you've ever reached!", color: :bright_green)
             sleep(0.5)
         end
     end
@@ -204,7 +221,6 @@ class MillionaireGame
         puts 'Each question is worth a specified amount of "Prize Money" and is not cumulative.'.light_blue
         puts "If at any time the contestant gives a wrong answer, the game is over.".light_blue
         puts ""
-        sleep(1)
         puts "You will have access to 2 different Lifelines.".light_green
         print "However, you will only be able to use ".light_green
         print "1 Lifeline per question".light_red.bold.underline
@@ -219,7 +235,6 @@ class MillionaireGame
         print "Cut Question Lifeline".light_red
         puts " can be used to swap questions and get a new one.".light_green
         puts ""
-        sleep(1)
         puts "\n" * 2
         option = PROMPT.select("OPTIONS", %W(Menu Quit), active_color: :bright_blue)
         puts "\n" * 50
@@ -228,6 +243,16 @@ class MillionaireGame
         else
             self.introduction
         end
+    end
+
+    def self.winner
+        self.high_score?
+        puts "\n" * 50 
+        puts "CONGRATULATIONS #{@@player.username} you just won $#{@prize_money}!!!!".green.bold
+        puts "\n" * 3
+        puts "You're a Genius!"
+        puts "\n" * 3
+        self.introduction
     end
 
     def self.end_game
