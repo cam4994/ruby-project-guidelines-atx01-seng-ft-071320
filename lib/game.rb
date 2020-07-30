@@ -2,11 +2,11 @@ class MillionaireGame
 
     def self.introduction
         puts "Welcome to MILLIONAIRE!!!".light_cyan.bold
-        puts ""
-        puts ""
+        puts "\n" * 2
         menu_option = PROMPT.select("MAIN MENU", %W(Start High_Scores Instructions Quit), active_color: :bright_blue)
         if menu_option == "Start"
             first_time = PROMPT.yes?("Is this your first time playing?")
+            puts "\n" * 50
             if first_time == true 
                 @@player= User.new_user
                 self.start_game
@@ -17,6 +17,7 @@ class MillionaireGame
             User.high_scores
             self.introduction
         elsif menu_option == "Instructions"
+            puts "\n" * 50
             self.instructions 
         else
             self.end_game
@@ -31,6 +32,7 @@ class MillionaireGame
             player_password = PROMPT.mask("Please enter your password.")
             # If username was found, verify password
             if player_password == @@player.password
+                puts "\n" * 50 
                 self.start_game 
             else
                 PROMPT.say("Incorrect password.", color: :red)
@@ -62,8 +64,9 @@ class MillionaireGame
         Lifeline.get_lifeline_cut.update(available: true)
         @@question_amounts = [100, 200, 300, 500, 1000, 2000, 4000, 8000, 16000, 32000, 64000, 125000, 2500000, 500000, 1000000]
         @prize_money = 0
-        puts ""
-        print "Welcome #{@@player.username}! You will start with a question worth "
+        print "Welcome "
+        print "#{@@player.username}".red.bold
+        print"! You will start with a question worth "
         puts "$100".light_green.bold
         puts "As you answer questions correctly, the value of the questions will increase, but so will the difficulty!"
         puts ""
@@ -71,7 +74,9 @@ class MillionaireGame
         if start == "Quit"
             self.end_game
         else
+            puts "\n" * 50
             puts "Who wants to be a millionaire in cool ascii"
+            puts "\n" * 2
             self.main 
         end
     end
@@ -109,9 +114,8 @@ class MillionaireGame
             @questionuser.answered_correctly = true
             @questionuser.save
             PROMPT.say("Congratulations! #{answer_choice} is correct!", color: :bright_green)
-            2.times do 
-                puts ""
-            end
+            sleep(2.5)
+            puts "\n" * 50
             @prize_money = @question_amount
             #Check to see if that was the final question 
             if @prize_money == 1000000
@@ -123,6 +127,7 @@ class MillionaireGame
             @questionuser.answered_correctly = false
             @questionuser.save
             PROMPT.say("Sorry, that's incorrect. The correct answer was #{question.correct_answer}.", color: :bright_red)
+            sleep(3)
             self.missed_question
         end
     end
@@ -159,15 +164,18 @@ class MillionaireGame
         sleep(1)
     end
     def self.missed_question
+        puts "\n" * 50
         if @prize_money == 0
             PROMPT.say("You didn't win any money... at least you tried.")
         else
             PROMPT.say("That's okay #{@@player.username} you still won $#{@prize_money} of fake money! Be proud!", color: :bright_green)
         end
+        puts "\n"
         self.high_score?
         answer = PROMPT.yes?("Would you like to play a new game?")
         #if player answered yes, start a new game
         if answer 
+            puts "\n" * 50
             self.start_game
         else
             self.end_game
@@ -187,42 +195,34 @@ class MillionaireGame
 
     def self.instructions
         #Only one lifeline may be used per question
-        puts ""
+        puts "INSTRUCTIONS".bold.underline
+        puts "\n" * 2
         puts "Millionaire is a quiz competition in which the goal is to correctly answer a series of 15 consecutive multiple-choice questions.".light_blue
-        sleep(1.5)
         puts "You must create a username or login if you are a previous player. Your high score will be recorded.".light_blue
-        sleep(1.5)
         puts "Each question will have 4 answer choices, with only 1 correct answer.".light_blue
-        sleep(1.5)
         puts "The question difficulty will increase every 5 questions.".light_blue
-        sleep(1.5)
         puts 'Each question is worth a specified amount of "Prize Money" and is not cumulative.'.light_blue
-        sleep(1.5)
         puts "If at any time the contestant gives a wrong answer, the game is over.".light_blue
         puts ""
-        sleep(2)
+        sleep(1)
         puts "You will have access to 2 different Lifelines.".light_green
-        sleep(1.5)
         print "However, you will only be able to use ".light_green
         print "1 Lifeline per question".light_red.bold.underline
-        puts " and each Lifeline can only be used once."
-        sleep(1.5)
+        puts " and each Lifeline can only be used once.".light_green
         puts "Once a question appears with the 4 answer choices, you can access the Lifelines by either scrolling down or hitting the right arrow key.".light_green
         puts ""
-        sleep(1.5)
         print "The ".light_green
         print "Fifty-Fifty Lifeline".light_red
         puts " can be used to get rid of two incorrect answer choices.".light_green
-        sleep(1.5)
         puts ""
         print "The ".light_green
         print "Cut Question Lifeline".light_red
         puts " can be used to swap questions and get a new one.".light_green
         puts ""
-        sleep(1.5)
-        puts ""
-        puts ""
+        sleep(1)
+        puts "\n" * 2
         option = PROMPT.select("OPTIONS", %W(Menu Quit), active_color: :bright_blue)
+        puts "\n" * 50
         if option == "Quit"
             self.end_game
         else
@@ -231,7 +231,8 @@ class MillionaireGame
     end
 
     def self.end_game
-        puts "Play again soon!"
+        puts "\n" * 50 
+        puts "Thanks for playing!"
     end
 end
 

@@ -34,15 +34,15 @@ class User < ActiveRecord::Base
 
     def self.new_user 
         new_user = self.new_username 
+        puts "\n" * 50
         new_user.password = self.set_password 
+        puts "\n" * 50
         new_user.save 
         new_user
     end
 
     def self.high_scores 
-        3.times do 
-            puts ""
-        end
+        puts "\n" * 50
         PROMPT.say("          HIGH SCORES", color: :bright_green)
         puts ""
         users = self.where("high_score > 0").order("high_score DESC").limit(10)
@@ -52,10 +52,9 @@ class User < ActiveRecord::Base
             print " ----- ".bold 
             print "High Score: ".light_red
             puts "$#{user.high_score}".yellow.bold
+            sleep(1)
         end
-        3.times do 
-            puts ""
-        end
+        puts "\n" * 3
         sleep(1)
     end
 

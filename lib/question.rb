@@ -28,14 +28,19 @@ class Question < ActiveRecord::Base
         questions.each do |question|
             question["question"].gsub!("&#039;", "'")
             question["question"].gsub!('&quot;', '"')
+            question["question"].gsub!('&amp;', '&')
             question["correct_answer"].gsub!("&#039;", "'")
             question["correct_answer"].gsub!('&quot;', '"')
+            question["correct_answer"].gsub!('&amp;', '&')
             question["incorrect_answers"][0].gsub!("&#039;", "'")
             question["incorrect_answers"][0].gsub!('&quot;', '"')
+            question["incorrect_answers"][0].gsub!('&amp;', '&')
             question["incorrect_answers"][1].gsub!("&#039;", "'")
             question["incorrect_answers"][1].gsub!('&quot;', '"')
+            question["incorrect_answers"][1].gsub!('&amp;', '&')
             question["incorrect_answers"][2].gsub!("&#039;", "'")
             question["incorrect_answers"][2].gsub!('&quot;', '"')
+            question["incorrect_answers"][2].gsub!('&amp;', '&')
         end
         questions
     end
