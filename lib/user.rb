@@ -4,18 +4,29 @@ class User < ActiveRecord::Base
     has_many :questions, through: :question_users
 
     def self.new_username
-        new_username = PROMPT.ask("Please select a new username.")
-        confirm_username = PROMPT.yes?("You selected #{new_username}. Are you sure?")
-        if confirm_username == false 
-            self.new_username 
-        else
-            if User.find_by(username: new_username)
-                PROMPT.say("#{new_username} is already taken.", color: :red)
-                self.new_username
-            else
-                User.create(username: new_username)
-            end
+        CLI::UI::StdoutRouter.enable
+        new_username = CLI::UI.ask("Please select a new username.")
+        confirm_username = CLI::UI.ask("You selected #{new_username}. Are you sure?", options: %w(Yes No))
+        if User.find_by(username: new_username)
+            PROMPT.say("#{new_username} is already taken.", color: :red)
+            self.new_username
         end
+        case confirm_username
+        when "Yes"
+            User.create(username: new_username)
+        when "No"
+            self.new_username 
+        end
+        # if confirm_username == false 
+        #     self.new_username 
+        # else
+        #     if User.find_by(username: new_username)
+        #         PROMPT.say("#{new_username} is already taken.", color: :red)
+        #         self.new_username
+        #     else
+        #         User.create(username: new_username)
+        #     end
+        # end
     end
 
     def self.set_password 

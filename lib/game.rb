@@ -221,13 +221,13 @@ class MillionaireGame
         case pick_an_edit
            when "Username"
                 self.change_username
-                MillionaireGame.main
+                self.start_game
            when "Password"
                 self.change_password
                 puts "Your password was successfully changed"
-                MillionaireGame.main 
+                self.start_game
            else "Back"
-            MillionaireGame.main             
+            self.start_game
         end
     end
 
@@ -264,7 +264,6 @@ class MillionaireGame
             if User.find_by(username: new_username) == nil
                 @@player.username=new_username
                 @@player.save
-                self.start_game
         else
             puts "#{new_username}, is already taken. Please enter a different name."
             self.change_username
