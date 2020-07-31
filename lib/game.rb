@@ -1,7 +1,7 @@
 class MillionaireGame
 
     def self.introduction
-        puts "Welcome to MILLIONAIRE!!!".light_cyan.bold
+        self.millionaire_banner
         puts "\n" * 2
         menu_option = PROMPT.select("MAIN MENU", %W(Start High_Scores Instructions Quit), active_color: :bright_blue)
         if menu_option == "Start"
@@ -255,9 +255,77 @@ class MillionaireGame
         self.introduction
     end
 
+    def self.edit_info
+        pick_an_edit = PROMPT.select("Change Username or Password?", %w(Username Password Back))
+        case pick_an_edit
+        when "Username"
+                self.change_username
+                self.start_game
+        when "Password"
+                self.change_password
+                puts "Your password was successfully changed".light_green
+                self.start_game
+        else "Back"
+            self.start_game
+        end
+    end
+
+    def self.change_password
+        old_password = PROMPT.mask("Please enter your old password", required: true)
+        if old_password == @@player.password
+            new_password = PROMPT.mask("Please enter your new password", required: true) do |q|
+            q.validate(/^(?=.*[a-zA-Z])(?=.*[0-9]).{6,}$/)
+            q.messages[:valid?] = 'Your passowrd must be at least 6 characters and include one number and one letter'
+            end
+            confirm_password = PROMPT.mask("Please confirm your new password", required: true)
+            if new_password == confirm_password
+                @@player.password = new_password
+                @@player.save
+            else
+                puts "Those didn't match. Please try again!".red
+                self.change_password
+            end
+        else
+            puts "Incorrect Password.".red
+            puts "Please try again".red
+            self.change_password
+        end
+    end
+
+    def self.change_username
+        new_username= PROMPT.ask("Please enter your username.")
+        confirm_new_username= PROMPT.select("Is #{new_username}, what you'd like to be known as?", %w(Yes No))
+        case confirm_new_username
+        when "Yes"
+            if User.find_by(username: new_username) == nil
+                @@player.username=new_username
+                @@player.save
+            else
+                puts "#{new_username}, is already taken. Please enter a different name."
+                self.change_username
+            end
+        else
+            self.edit_info
+        end
+    end
+
     def self.end_game
         puts "\n" * 50 
+        self.millionaire_banner
+        puts "\n" * 2
         puts "Thanks for playing!"
+    end
+
+    def self.millionaire_banner
+        puts "
+    /$$      /$$ /$$ /$$ /$$ /$$                               /$$                     /$$ /$$ /$$
+    | $$$    /$$$|__/| $$| $$|__/                              |__/                    | $$| $$| $$
+    | $$$$  /$$$$ /$$| $$| $$ /$$  /$$$$$$  /$$$$$$$   /$$$$$$  /$$  /$$$$$$   /$$$$$$ | $$| $$| $$
+    | $$ $$/$$ $$| $$| $$| $$| $$ /$$__  $$| $$__  $$ |____  $$| $$ /$$__  $$ /$$__  $$| $$| $$| $$
+    | $$  $$$| $$| $$| $$| $$| $$| $$  \  $$| $$  \  $$  /$$$$$$$| $$| $$  \ __/| $$$$$$$$|__/|__/|__/
+    | $$\   $ | $$| $$| $$| $$| $$| $$  | $$| $$  | $$ /$$__  $$| $$| $$      | $$_____/            
+    | $$ \ /  | $$| $$| $$| $$| $$|  $$$$$$/| $$  | $$|  $$$$$$$| $$| $$      |  $$$$$$$ /$$ /$$ /$$
+    |__/     |__/|__/|__/|__/|__/ \ ______/ |__/  |__/ \ _______/|__/|__/       \ _______/|__/|__/|__/".yellow
     end
 end
 
