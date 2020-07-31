@@ -243,7 +243,6 @@ class MillionaireGame
                 @@player.password = nil
                 @@player.password = new_password
                 @@player.save
-                self.start_game
             else
                 puts "Those didn't match. Please try again!"
                 self.change_password
