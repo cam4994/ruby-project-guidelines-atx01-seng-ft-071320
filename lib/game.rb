@@ -54,10 +54,11 @@ class MillionaireGame
         @@question_amounts = [100, 200, 300, 500, 1000, 2000, 4000, 8000, 16000, 32000, 64000, 125000, 2500000, 500000, 1000000]
         @prize_money = 0
         puts "You will start with a question worth $100. As you answer questions correctly, the value of the questions will increase, but so will the difficulty!"
-            start = PROMPT.select("Are you ready?", %w(Begin Quit Edit_Info), active_color: :bright_blue)
-        if start == "Quit"
+            start = PROMPT.select("Are you ready?", %w(Begin Edit_Info Quit ), active_color: :bright_blue)
+        case start
+        when "Quit"
             self.end_game
-        elsif "Edit_Info"
+        when "Edit_Info"
             self.edit_info
         else
             self.main
