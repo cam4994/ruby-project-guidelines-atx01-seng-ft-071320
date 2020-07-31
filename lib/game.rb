@@ -271,13 +271,12 @@ class MillionaireGame
 
     def self.edit_info
         pick_an_edit = PROMPT.select("Change Username or Password?", %w(Username Password Back), active_color: :bright_blue)
-        case pick_an_edit
-        when "Username"
+        if pick_an_edit == "Username"
             puts "\n" * 50
             self.change_username
             puts "\n" * 50
             self.start_game
-        when "Password"
+        elsif pick_an_edit == "Password"
             puts "\n" * 50
             self.change_password
             puts "\n"
@@ -285,7 +284,7 @@ class MillionaireGame
             sleep(2)
             puts "\n" * 50
             self.start_game
-        else "Back"
+        elsif pick_an_edit == "Back"
             puts "\n" * 50
             self.start_game
         end
@@ -317,8 +316,7 @@ class MillionaireGame
         new_username= PROMPT.ask("Please enter your new username.")
         puts "\n"
         confirm_new_username= PROMPT.select("Your new username will be #{new_username}, it this okay?", %w(Yes No), active_color: :bright_blue)
-        case confirm_new_username
-        when "Yes"
+        if confirm_new_username == "Yes"
             if User.find_by(username: new_username) == nil
                 @@player.username=new_username
                 @@player.save
@@ -330,7 +328,6 @@ class MillionaireGame
             end
         else
             puts "\n" * 50
-            self.edit_info
         end
     end
 
