@@ -6,9 +6,9 @@ INSTALLATION
 -Open the directory using either your terminal or a code editing software
 -Using the terminal, type the following commands followed by return(enter)
 
-bundle install
-rake db:migrate
-rake db:seed
+1. bundle install
+2. rake db:migrate
+3. rake db:seed
 
 RUNNING THE GAME
 
