@@ -263,10 +263,10 @@ class MillionaireGame
             if User.find_by(username: new_username) == nil
                 @@player.username=new_username
                 @@player.save
-        else
-            puts "#{new_username}, is already taken. Please enter a different name."
-            self.change_username
-        end
+            else
+                puts "#{new_username}, is already taken. Please enter a different name."
+                self.change_username
+            end
         else
             self.edit_info
         end
