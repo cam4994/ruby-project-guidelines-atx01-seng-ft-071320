@@ -65,7 +65,9 @@ class MillionaireGame
     end
 
     def self.start_game
-        Question.store_questions
+        2.times do 
+            Question.store_questions
+        end
         #Reset lifelines
         Lifeline.get_lifeline_fifty.update(available: true)
         Lifeline.get_lifeline_cut.update(available: true)
