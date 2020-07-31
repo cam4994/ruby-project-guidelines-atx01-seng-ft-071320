@@ -54,9 +54,11 @@ class MillionaireGame
         @@question_amounts = [100, 200, 300, 500, 1000, 2000, 4000, 8000, 16000, 32000, 64000, 125000, 2500000, 500000, 1000000]
         @prize_money = 0
         puts "You will start with a question worth $100. As you answer questions correctly, the value of the questions will increase, but so will the difficulty!"
-            start = PROMPT.select("Are you ready?", %w(Begin Quit), active_color: :bright_blue)
+            start = PROMPT.select("Are you ready?", %w(Begin Quit Edit_Info), active_color: :bright_blue)
         if start == "Quit"
             self.end_game
+        elsif "Edit_Info"
+            self.edit_info
         else
             self.main
         end 
@@ -210,6 +212,64 @@ class MillionaireGame
             self.end_game
         else
             self.introduction
+        end
+    end
+
+    def self.edit_info
+        pick_an_edit = PROMPT.select("Change Username or Password?", %w(Username Password Back))
+        case pick_an_edit
+           when "Username"
+                self.change_username
+                MillionaireGame.main
+           when "Password"
+                self.change_password
+                puts "Your password was successfully changed"
+                MillionaireGame.main 
+           else "Back"
+            MillionaireGame.main             
+        end
+    end
+
+    def self.change_password
+        old_password = PROMPT.mask("Please enter your old password", required: true)
+        if old_password == @@player.password
+            new_password = PROMPT.mask("Please enter your new password", required: true) do |q|
+            q.validate(/^(?=.*[a-zA-Z])(?=.*[0-9]).{6,}$/)
+            q.messages[:valid?] = 'Your passowrd must be at least 6 characters and include one number and one letter'
+          end
+            confirm_password = PROMPT.mask("Please confirm your new password", required: true)
+            if new_password == confirm_password
+                @@player.password = nil
+                @@player.password = new_password
+                @@player.save
+                self.start_game
+            else
+                puts "Those didn't match. Please try again!"
+                self.change_password
+            end
+        else
+            puts "That was not right."
+            puts "Please try again"
+            self.change_password
+        end
+    end
+
+    def self.change_username
+        CLI::UI::StdoutRouter.enable
+        new_username=CLI::UI.ask("Please enter your username.")
+        confirm_new_username=CLI::UI.ask("Is #{new_username}, what you'd like to be known as?", options: %w(Yes No))
+        case confirm_new_username
+        when "Yes"
+            if User.find_by(username: new_username) == nil
+                @@player.username=new_username
+                @@player.save
+                self.start_game
+        else
+            puts "#{new_username}, is already taken. Please enter a different name."
+            self.change_username
+        end
+        else
+            self.edit_info
         end
     end
 

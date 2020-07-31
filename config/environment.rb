@@ -10,6 +10,7 @@ require 'cli/ui'
 
 
 
+CLI::UI::StdoutRouter.enable
 
 Bundler.require
 
