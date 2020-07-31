@@ -16,7 +16,13 @@ class MillionaireGame
             end
         elsif menu_option == "High_Scores"
             User.high_scores
-            self.introduction
+            option = PROMPT.select("OPTIONS", %W(Menu Quit), active_color: :bright_blue)
+            puts "\n" * 50
+            if option == "Quit"
+                self.end_game
+            else
+                self.introduction
+            end
         elsif menu_option == "Instructions"
             puts "\n" * 50
             self.instructions 
@@ -114,7 +120,7 @@ class MillionaireGame
     end
 
     def self.check_if_correct(answer_choice, question)
-        #See if answer was correct, incorrect or a lifeline
+        #See if answer was correct or Incorrect
         if answer_choice == question.correct_answer
             @questionuser.answered_correctly = true
             @questionuser.save
@@ -128,6 +134,7 @@ class MillionaireGame
             else 
                 self.main
             end
+        #Answer was incorrect
         else
             @questionuser.answered_correctly = false
             @questionuser.save
@@ -157,7 +164,7 @@ class MillionaireGame
             print "#{q}  ".yellow.bold 
             print "$#{@@question_amounts[-i]}".green
             if q == @question_counter 
-                puts "  <----"
+                puts "  <----".white.bold
             else
                 puts "\n"
             end

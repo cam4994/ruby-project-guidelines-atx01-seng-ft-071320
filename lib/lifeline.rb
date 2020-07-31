@@ -22,7 +22,7 @@ class Lifeline < ActiveRecord::Base
         choices.shuffle
         PROMPT.say("Two incorrect answers have been removed.", color: :bright_green)
         sleep(1)
-        puts ""
+        puts "\n"
         answer_choice = PROMPT.select("#{question.problem}", choices, per_page: 4, active_color: :bright_blue, cycle: true)
     end
 
