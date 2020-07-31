@@ -71,14 +71,17 @@ class MillionaireGame
         puts "$100".light_green.bold
         puts "As you answer questions correctly, the value of the questions will increase, but so will the difficulty!"
         puts ""
-        start = PROMPT.select("Are you ready?", %w(Begin Quit), active_color: :bright_blue)
-        if start == "Quit"
-            self.end_game
-        else
+        start = PROMPT.select("Are you ready?", %w(Begin Edit_Info Quit), active_color: :bright_blue)
+        if start == "Begin"
             puts "\n" * 50
-            puts "Who wants to be a millionaire in cool ascii"
+            self.millionaire_banner
             puts "\n" * 2
             self.main 
+        elsif start == "Edit_Info"
+            puts "\n" * 50
+            self.edit_info
+        else 
+            self.end_game
         end
     end
 
@@ -256,16 +259,23 @@ class MillionaireGame
     end
 
     def self.edit_info
-        pick_an_edit = PROMPT.select("Change Username or Password?", %w(Username Password Back))
+        pick_an_edit = PROMPT.select("Change Username or Password?", %w(Username Password Back), active_color: :bright_blue)
         case pick_an_edit
         when "Username"
-                self.change_username
-                self.start_game
+            puts "\n" * 50
+            self.change_username
+            puts "\n" * 50
+            self.start_game
         when "Password"
-                self.change_password
-                puts "Your password was successfully changed".light_green
-                self.start_game
+            puts "\n" * 50
+            self.change_password
+            puts "\n"
+            puts "Your password was successfully changed".light_green
+            sleep(2)
+            puts "\n" * 50
+            self.start_game
         else "Back"
+            puts "\n" * 50
             self.start_game
         end
     end
@@ -275,7 +285,7 @@ class MillionaireGame
         if old_password == @@player.password
             new_password = PROMPT.mask("Please enter your new password", required: true) do |q|
             q.validate(/^(?=.*[a-zA-Z])(?=.*[0-9]).{6,}$/)
-            q.messages[:valid?] = 'Your passowrd must be at least 6 characters and include one number and one letter'
+            q.messages[:valid?] = 'Your password must be at least 6 characters and include one number and one letter'
             end
             confirm_password = PROMPT.mask("Please confirm your new password", required: true)
             if new_password == confirm_password
@@ -286,25 +296,29 @@ class MillionaireGame
                 self.change_password
             end
         else
-            puts "Incorrect Password.".red
-            puts "Please try again".red
+            puts "Incorrect Password. Please try again.".red
+            puts "/n"
             self.change_password
         end
     end
 
     def self.change_username
-        new_username= PROMPT.ask("Please enter your username.")
-        confirm_new_username= PROMPT.select("Is #{new_username}, what you'd like to be known as?", %w(Yes No))
+        new_username= PROMPT.ask("Please enter your new username.")
+        puts "\n"
+        confirm_new_username= PROMPT.select("Your new username will be #{new_username}, it this okay?", %w(Yes No), active_color: :bright_blue)
         case confirm_new_username
         when "Yes"
             if User.find_by(username: new_username) == nil
                 @@player.username=new_username
                 @@player.save
             else
-                puts "#{new_username}, is already taken. Please enter a different name."
+                puts "\n" * 50
+                puts "#{new_username} is already taken. Please select a different username.".red
+                puts "\n" 
                 self.change_username
             end
         else
+            puts "\n" * 50
             self.edit_info
         end
     end

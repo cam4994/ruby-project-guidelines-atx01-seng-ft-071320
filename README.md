@@ -5,6 +5,7 @@ INSTALLATION
 -Open the directory using either your terminal or a code editing software
 -Using the terminal, type the following commands followed by return(enter)
 
+bundle install
 rake db:migrate
 rake db:seed
 
