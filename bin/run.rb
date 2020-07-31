@@ -1,6 +1,6 @@
 require_relative '../config/environment'
 
-
+CLI::UI::StdoutRouter.enable
 CLI::UI::Frame.open('Welcome to who wants to be...a') do
      puts "
      /$$      /$$ /$$ /$$ /$$ /$$                               /$$                     /$$ /$$ /$$

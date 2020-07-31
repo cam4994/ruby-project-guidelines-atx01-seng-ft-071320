@@ -4,13 +4,6 @@ class MillionaireGame
         puts "".light_cyan.bold.blink                                                          
         menu_option = PROMPT.select("MAIN MENU", %W(Start High_Scores Instructions Quit), active_color: :bright_blue)
         if menu_option == "Start"
-            # first_time = PROMPT.ask("Is this your first time playing?")
-            # if first_time == true 
-            #     @@player= User.new_user
-            #     self.start_game
-            # else
-            #     self.login
-            # end
             CLI::UI::StdoutRouter.enable
             first_time=CLI::UI.ask("Is this your first time playing?", options: %w(Yes No))
             case first_time
@@ -54,53 +47,47 @@ class MillionaireGame
     end
 
     def self.start_game
-        CLI::UI::StdoutRouter.enable
-        CLI::UI::Frame.open("Welcome, #{@@player.username}") do
-            Question.store_questions
-            #Reset lifelines
-            Lifeline.get_lifeline_fifty.update(available: true)
-            Lifeline.get_lifeline_cut.update(available: true)
-            @@question_amounts = [100, 200, 300, 500, 1000, 2000, 4000, 8000, 16000, 32000, 64000, 125000, 2500000, 500000, 1000000]
-            @prize_money = 0
-            puts "You will start with a question worth $100. As you answer questions correctly, the value of the questions will increase, but so will the difficulty!"
-                start = PROMPT.select("Are you ready?", %w(Begin Quit), active_color: :bright_blue)
-            if start == "Quit"
-                self.end_game
-            else
-                self.main
-            end 
-        end
+        Question.store_questions
+        #Reset lifelines
+        Lifeline.get_lifeline_fifty.update(available: true)
+        Lifeline.get_lifeline_cut.update(available: true)
+        @@question_amounts = [100, 200, 300, 500, 1000, 2000, 4000, 8000, 16000, 32000, 64000, 125000, 2500000, 500000, 1000000]
+        @prize_money = 0
+        puts "You will start with a question worth $100. As you answer questions correctly, the value of the questions will increase, but so will the difficulty!"
+            start = PROMPT.select("Are you ready?", %w(Begin Quit), active_color: :bright_blue)
+        if start == "Quit"
+            self.end_game
+        else
+            self.main
+        end 
     end
 
     def self.main
-        CLI::UI::StdoutRouter.enable
-        CLI::UI::Frame.open("Alright, let's play") do
-            self.millionaire_banner
-            self.display
-            question = self.next_question
+        self.millionaire_banner
+        self.display
+        question = self.next_question
+        @questionuser = QuestionUser.create(user: @@player, question: question)
+        choices = [question.correct_answer, question.incorrect_answer1, question.incorrect_answer2, question.incorrect_answer3].shuffle
+        #Check to see which lifelines are available
+        if Lifeline.get_lifeline_fifty.available == true
+            choices << "Fifty-Fifty Lifeline"
+        end
+        if Lifeline.get_lifeline_cut.available == true
+            choices << "Cut Question Lifeline"
+        end
+        PROMPT.say("If you answer the next question correctly, you'll win' $#{@question_amount}!!")
+        puts ""
+        sleep(1)
+        answer_choice = PROMPT.select("#{question.problem}", choices, per_page: 4, active_color: :bright_blue, cycle: true)
+        if answer_choice == "Fifty-Fifty Lifeline"
+            answer_choice = Lifeline.activate_fifty_fifty(question)
+        elsif answer_choice == "Cut Question Lifeline"
+            question = Lifeline.activate_cut_question(@question_amount)
             @questionuser = QuestionUser.create(user: @@player, question: question)
             choices = [question.correct_answer, question.incorrect_answer1, question.incorrect_answer2, question.incorrect_answer3].shuffle
-            #Check to see which lifelines are available
-            if Lifeline.get_lifeline_fifty.available == true
-                choices << "Fifty-Fifty Lifeline"
-            end
-            if Lifeline.get_lifeline_cut.available == true
-                choices << "Cut Question Lifeline"
-            end
-            PROMPT.say("If you answer the next question correctly, you'll win' $#{@question_amount}!!")
-            puts ""
-            sleep(1)
             answer_choice = PROMPT.select("#{question.problem}", choices, per_page: 4, active_color: :bright_blue, cycle: true)
-            if answer_choice == "Fifty-Fifty Lifeline"
-                answer_choice = Lifeline.activate_fifty_fifty(question)
-            elsif answer_choice == "Cut Question Lifeline"
-                question = Lifeline.activate_cut_question(@question_amount)
-                @questionuser = QuestionUser.create(user: @@player, question: question)
-                choices = [question.correct_answer, question.incorrect_answer1, question.incorrect_answer2, question.incorrect_answer3].shuffle
-                answer_choice = PROMPT.select("#{question.problem}", choices, per_page: 4, active_color: :bright_blue, cycle: true)
-            end
-            self.check_if_correct(answer_choice, question)
         end
+        self.check_if_correct(answer_choice, question)
     end
 
     def self.check_if_correct(answer_choice, question)
@@ -169,13 +156,6 @@ class MillionaireGame
             PROMPT.say("That's okay #{@@player.username} you still won $#{@prize_money} of fake money! Be proud!", color: :bright_green)
         end
         self.high_score?
-        # answer = PROMPT.yes?("Would you like to play a new game?")
-        # #if player answered yes, start a new game
-        # if answer
-        #     self.start_game
-        # else
-        #     self.end_game
-        # end
         CLI::UI::StdoutRouter.enable
         answer = CLI::UI.ask("Would you like to play again?", options: %w(Yes No))
         case answer
