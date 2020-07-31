@@ -28,6 +28,7 @@ class User < ActiveRecord::Base
             new_password
         else
             PROMPT.say("The passwords did not match. Please try again.", color: :red)
+            puts "\n" * 2 
             self.set_password
         end
     end

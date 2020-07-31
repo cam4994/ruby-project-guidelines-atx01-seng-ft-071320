@@ -1,6 +1,7 @@
 MILLIONAIRE 
 
 INSTALLATION
+
 -Clone the directory to your local device
 -Open the directory using either your terminal or a code editing software
 -Using the terminal, type the following commands followed by return(enter)
@@ -9,7 +10,8 @@ bundle install
 rake db:migrate
 rake db:seed
 
-RUNNING THE GAME 
+RUNNING THE GAME
+
 -To start the game, type the folloiwng command followed by return(enter)
 
 ruby bin/run.rb
@@ -24,6 +26,7 @@ ruby bin/run.rb
 
 
 INTRODUCTION
+
 Welcome to MILLIONAIRE! 
 
 Millionaire is a quiz competition in which the goal is to correctly answer a series of 15 consecutive multiple-choice questions.
@@ -41,5 +44,6 @@ The Cut Question Lifeline can be used to swap questions and get a new one
  
 
 CONTRIBUTORS GUIDE
+
 Please contact either Colin Mosley or Arnie Serrano on GitHub if you would like to contribute to the future development of MILLIONAIRE!
 

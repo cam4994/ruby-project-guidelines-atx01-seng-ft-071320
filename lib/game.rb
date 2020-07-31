@@ -1,6 +1,7 @@
 class MillionaireGame
 
     def self.introduction
+        puts "\n" * 50
         self.millionaire_banner
         puts "\n" * 2
         menu_option = PROMPT.select("MAIN MENU", %W(Start High_Scores Instructions Quit), active_color: :bright_blue)
@@ -209,6 +210,7 @@ class MillionaireGame
         elsif @@player.high_score < @prize_money
             @@player.update(high_score: @prize_money)
             PROMPT.say("Congrats, this is the furthest you've ever reached!", color: :bright_green)
+            puts "\n" * 2
             sleep(0.5)
         end
     end
@@ -297,7 +299,7 @@ class MillionaireGame
             end
         else
             puts "Incorrect Password. Please try again.".red
-            puts "/n"
+            puts "\n"
             self.change_password
         end
     end
